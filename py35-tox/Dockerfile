@@ -11,6 +11,11 @@ LABEL "com.github.actions.color"="gray-dark"
 
 COPY entrypoint.sh /entrypoint.sh
 
-RUN pip3 install --no-cache-dir tox
+RUN apt-get update \
+    && apt-get install -y \
+        libudev-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip3 install --no-cache-dir tox
 
 ENTRYPOINT ["/entrypoint.sh"]
