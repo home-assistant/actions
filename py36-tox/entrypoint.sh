@@ -1,4 +1,3 @@
-#!/bin/bash
-set -e
+#!/bin/sh -l
 
-tox $*
+sh -c "tox $*"
