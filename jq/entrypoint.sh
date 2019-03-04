@@ -2,4 +2,4 @@
 set -e
 shopt -s globstar
 
-jq $*
+cat -- $* | jq '.'
