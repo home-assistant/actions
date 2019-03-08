@@ -13,7 +13,8 @@ COPY entrypoint.sh /entrypoint.sh
 
 RUN apt-get update \
     && apt-get install -y \
-        libudev-dev \
+        libudev-dev libavformat-dev libavcodec-dev libavdevice-dev \
+        libavutil-dev libswscale-dev libswresample-dev libavfilter-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install --no-cache-dir tox
