@@ -1,5 +1,7 @@
 FROM python:3-alpine
 
+COPY entrypoint.sh /entrypoint.sh
+
 RUN \
     apk add --no-cache \
         python3-dev \
@@ -13,9 +15,9 @@ RUN \
     \
     && git clone --depth 1 https://github.com/home-assistant/core.git /core \
     \
-    && python3 -m pip install --no-cache-dir -e /core 
-
-COPY entrypoint.sh /entrypoint.sh
+    && python3 -m pip install --no-cache-dir -e /core \
+    \
+    && chmod +x /entrypoint.sh
 
 WORKDIR "/github/workspace"
 ENTRYPOINT ["/entrypoint.sh"]
