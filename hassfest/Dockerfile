@@ -5,6 +5,7 @@ COPY entrypoint.sh /entrypoint.sh
 RUN \
     apk add --no-cache \
         python3-dev \
+        bash \
         git \
         gcc \
         libc-dev \
