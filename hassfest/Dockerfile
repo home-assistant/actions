@@ -15,9 +15,7 @@ RUN \
     \
     && git clone --depth 1 https://github.com/home-assistant/core.git /core \
     \
-    && python3 -m pip install --no-cache-dir -e /core \
-    \
-    && chmod +x /entrypoint.sh
+    && python3 -m pip install --no-cache-dir -e /core 
 
 WORKDIR "/github/workspace"
 ENTRYPOINT ["/entrypoint.sh"]
