@@ -2,10 +2,7 @@ FROM homeassistant/home-assistant:beta
 
 COPY entrypoint.sh /entrypoint.sh
 
-RUN \
-    apk add --no-cache bash \
-    \
-    && chmod +x /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 WORKDIR "/github/workspace"
 ENTRYPOINT ["/entrypoint.sh"]
