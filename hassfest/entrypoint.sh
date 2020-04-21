@@ -12,5 +12,5 @@ if [ "${INTEGRATIONS}" = "" ]; then
     echo "No integrations found!"
     exit 1
 fi
-echo "${INTEGRATIONS[@]}"
+
 python3 -m script.hassfest --action validate "${INTEGRATIONS[@]}"
