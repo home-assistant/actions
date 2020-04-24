@@ -35,7 +35,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
         - uses: "actions/checkout@v2"
-        - uses: home-assistant/actions/hassfest@master
+        - uses: "home-assistant/actions/hassfest@master"
 ```
 
 This will run the `hassfest` action on every push and pull request to all branches, as well as every midnight.

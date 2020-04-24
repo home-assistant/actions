@@ -1,16 +1,15 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bashio
+declare -a integrations
+declare integration_path
 
-declare -a INTEGRATIONS
-
-for manifestfile in $(find $GITHUB_WORKSPACE -type f -name manifest.json); do
-    INTEGRATIONS+=(--integration-path)
-    INTEGRATIONS+=("$(dirname -- ${manifestfile})")
+shopt -s globstar nullglob
+for manifest in **/manifest.json; do
+    integration_path=$(dirname "${manifest}")
+    integrations+=(--integration-path "${integration_path}")
 done
 
-if [ "${INTEGRATIONS}" = "" ]; then
-    echo "No integrations found!"
-    exit 1
+if [[ ${#integrations[@]} -eq 0 ]]; then
+    bashio::exit.nok "No integrations found!"
 fi
-echo "${INTEGRATIONS[@]}"
-python3 -m script.hassfest --action validate "${INTEGRATIONS[@]}"
+
+exec python3 -m script.hassfest --action validate "${integrations[@]}"
