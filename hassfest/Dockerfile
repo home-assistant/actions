@@ -1,6 +1,9 @@
 FROM homeassistant/home-assistant:beta
 
 COPY entrypoint.sh /entrypoint.sh
+COPY requirements.txt /requirements.txt
+
+RUN pip3 install -r requirements.txt
 
 WORKDIR "/github/workspace"
 ENTRYPOINT ["/entrypoint.sh"]
