@@ -58,9 +58,9 @@ runs:
       run: |
         if [[ "${{ inputs.type }}" == "plugin" ]] || [[ "${{ inputs.type }}" == "supervisor" ]]; then
           if [[ "${{ steps.version.outputs.stable }}" ]]; then
-            echo "::set-output name=channel::'beta'"
+            echo "::set-output name=channel::beta"
           else
-            echo "::set-output name=channel::'dev'"
+            echo "::set-output name=channel::dev"
           fi
         fi
 
@@ -71,8 +71,8 @@ runs:
           if [[ ! -z "${{ github.head_ref }}" ]]; then
             echo "::set-output name=publish::'false'"
           elif [[ "${{ github.event_name }}" == "release" ]] || [[ "${{ github.event_name }}" == "push" ]]; then
-            echo "::set-output name=publish::'true'"
+            echo "::set-output name=publish::true"
           else
-            echo "::set-output name=publish::'false'"
+            echo "::set-output name=publish::false"
           fi
         fi
