@@ -1,0 +1,46 @@
+name: 'Home Assistant helper: version'
+description: 'GitHub action helper: version'
+inputs:
+  type:
+    description: The type of target to check against (core, supervisor, plugin, generic)
+    required: false
+    default: 'generic'
+outputs:
+  version: 
+    description: The version found for the requested type
+    value: ${{ steps.version.outputs.version }}
+  stable: 
+    description: Returns "true" if it is a stable build, else "false"
+    value: ${{ steps.version.outputs.stable }}
+runs:
+  using: "composite"
+  steps: 
+    - shell: bash
+      run: |
+        if [[ -z "${{ inputs.type }}" ]];then
+          echo "::error::Missing required key 'type' input!"
+          exit 1
+        fi
+
+    - shell: bash
+      id: version
+      run: |
+        version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
+        stable="true"
+        if [[ "${version}" == "master" ]] || [[ "${version}" == "main" ]];then
+          stable="false"
+          commit_count="$(git rev-list --count --since=yesterday HEAD)"
+          calver_date="$(date "+%Y.%m.dev%d")"
+          commit_count="$(printf "%02d" ${commit_count})"
+          version="${calver_date}${commit_count}"
+        fi
+
+        echo "::set-output name=stable::$stable"
+        echo "::set-output name=version::$version"
+
+    - shell: bash
+      run: |
+        if [[ "${{ inputs.type }}" == "supervisor" ]]; then
+          sed -i "s/SUPERVISOR_VERSION .*/SUPERVISOR_VERSION = \"${{ steps.version.outputs.version }}\"/g" supervisor/const.py
+        fi
+

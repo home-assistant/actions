@@ -1,0 +1,42 @@
+name: 'Home Assistant helper: version-push'
+description: 'GitHub action helper: version-push'
+inputs:
+  key:
+    required: true
+    default: ''
+  version:
+    required: true
+    default: ''
+  channel:
+    default: 'dev'
+runs:
+  using: "composite"
+  steps: 
+    - shell: bash
+      run: |
+        if [[ -z "${{ inputs.key }}" ]];then
+          echo "::error::Missing required key 'key' input!"
+          exit 1
+        elif [[ -z "${{ inputs.version }}" ]];then
+          echo "::error::Missing required key 'version' input!"
+          exit 1
+        fi
+
+    - shell: bash
+      run: git clone --depth 1 https://github.com/home-assistant/hassio-version.git /tmp/hassio-version
+
+    - shell: bash
+      id: version
+      run: |
+        version=$(jq --raw-output '.${{ inputs.key }}' /tmp/hassio-version/${{ inputs.channel }}.json)
+        echo "::set-output name=version::$version"
+
+    - shell: bash
+      run: |
+        sed -i "s|\"${{ inputs.key }}\": \"${{ steps.version.outputs.version }}\"|\"${{ inputs.key }}\": \"${{ inputs.version }}\"|g" /tmp/hassio-version/${{ inputs.channel }}.json
+
+    - shell: bash
+      run: |
+        cd /tmp/hassio-version || exit 1
+        git commit -am "Bump ${{ inputs.key }} from ${{ steps.version.outputs.version }} to ${{ inputs.version }}"
+        git push
