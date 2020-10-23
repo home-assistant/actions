@@ -12,6 +12,12 @@ outputs:
   stable: 
     description: Returns "true" if it is a stable build, else "false"
     value: ${{ steps.version.outputs.stable }}
+  channel: 
+    description: Returns suggested channel.
+    value: ${{ steps.channel.outputs.channel }}
+  publish: 
+    description: Returns "true" if it should be published, else "false"
+    value: ${{ steps.publish.outputs.publish }}
 runs:
   using: "composite"
   steps: 
@@ -33,6 +39,8 @@ runs:
           calver_date="$(date "+%Y.%m.dev%d")"
           commit_count="$(printf "%02d" ${commit_count})"
           version="${calver_date}${commit_count}"
+        elif [[ "${version}" == "merge" ]]; then
+          version="${{ github.sha }}"
         fi
 
         echo "::set-output name=stable::$stable"
@@ -44,3 +52,27 @@ runs:
           sed -i "s/SUPERVISOR_VERSION .*/SUPERVISOR_VERSION = \"${{ steps.version.outputs.version }}\"/g" supervisor/const.py
         fi
 
+
+    - shell: bash
+      id: channel
+      run: |
+        if [[ "${{ inputs.type }}" == "plugin" ]] || [[ "${{ inputs.type }}" == "supervisor" ]]; then
+          if [[ "${{ steps.version.outputs.stable }}" ]]; then
+            echo "::set-output name=channel::beta"
+          else
+            echo "::set-output name=channel::dev"
+          fi
+        fi
+
+    - shell: bash
+      id: publish
+      run: |
+        if [[ "${{ inputs.type }}" == "plugin" ]] || [[ "${{ inputs.type }}" == "supervisor" ]]; then
+          if [[ ! -z "${{ github.head_ref }}" ]]; then
+            echo "::set-output name=publish::false"
+          elif [[ "${{ github.event_name }}" == "release" ]] || [[ "${{ github.event_name }}" == "push" ]]; then
+            echo "::set-output name=publish::true"
+          else
+            echo "::set-output name=publish::false"
+          fi
+        fi
