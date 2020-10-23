@@ -28,7 +28,7 @@ runs:
     - shell: bash
       id: version
       run: |
-        version=$(jq --raw-output '.${{ inputs.key }}' /tmp/hassio-version/${{ inputs.channel }}.json)
+        version=$(jq --raw-output '.["${{ inputs.key }}"]' /tmp/hassio-version/${{ inputs.channel }}.json)
         echo "::set-output name=version::$version"
 
     - shell: bash
