@@ -1,0 +1,25 @@
+name: 'Home Assistant helper: info'
+description: 'GitHub action helper: info'
+inputs:
+  path:
+    description: The relative dir path to where the type files are
+    required: false
+    default: '.'
+outputs:
+  architectures:
+    description: Returns the supported architectures
+    value: ${{ steps.architectures.outputs.architectures }}
+runs:
+  using: "composite"
+  steps: 
+    - shell: bash
+      id: architectures
+      run: |
+        if [[ -f "${{ inputs.path }}/build.json" ]]; then
+          archs=$(jq -r '.build_from |  keys | [ .[] | tostring ] | @json' "${{ inputs.path }}/build.json")
+        elif [[ -f "${{ inputs.path }}/config.json" ]]; then
+          archs=$(jq -r '.arch | [ .[] | tostring ] | @json' "${{ inputs.path }}/config.json")
+        else
+          archs=[]
+        fi
+        echo "::set-output name=architectures::$archs"
