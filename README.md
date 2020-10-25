@@ -32,7 +32,7 @@ This will run the `hassfest` action on every push and pull request to all branch
 
 ## Helpers
 
-A collection of CI helpers
+_A collection of GitHub Action helpers, these are considered internal to the Home Assistant organization on GitHub and will change without warning._
 
 - [git-init](./helpers/git-init/action.yml)
 - [info](./helpers/info/action.yml)
