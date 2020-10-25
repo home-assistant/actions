@@ -1,0 +1,23 @@
+name: Test Helpers
+
+on:
+  pull_request:
+    branches: ["master"]
+  push:
+    branches: ["master"]
+
+jobs:
+  jq:
+    runs-on: ubuntu-latest
+    name: jq
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+      
+      - name: Test base
+        uses: ./helpers/jq
+
+      - name: Test with path
+        uses: ./helpers/jq
+        with:
+          path: test_files
