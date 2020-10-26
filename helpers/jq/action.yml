@@ -1,0 +1,18 @@
+name: 'Home Assistant helper: JQ'
+description: 'GitHub action helper: JQ'
+inputs:
+  path:
+    description: The relative dir path to where this should run
+    required: false
+    default: '.'
+runs:
+  using: "composite"
+  steps: 
+    - shell: bash
+      run: |
+        declare -a jsonfiles
+        basepath=${{ github.workspace }}/${{ inputs.path }}
+        for jsonfile in $(find "$basepath" -type f -name "*.json"); do
+          echo "Linting: $jsonfile";
+          cat "$jsonfile" | jq -e '.' >/dev/null;
+        done;
