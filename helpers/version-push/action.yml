@@ -37,6 +37,6 @@ runs:
 
     - shell: bash
       run: |
-        cd /tmp/version || exit 1
+        cd /tmp/version
         git commit -am "Bump ${{ inputs.key }} from ${{ steps.version.outputs.version }} to ${{ inputs.version }}"
         git push
