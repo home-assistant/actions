@@ -23,20 +23,20 @@ runs:
         fi
 
     - shell: bash
-      run: git clone --depth 1 https://github.com/home-assistant/hassio-version.git /tmp/hassio-version
+      run: git clone --depth 1 https://github.com/home-assistant/version.git /tmp/version
 
     - shell: bash
       id: version
       run: |
-        version=$(jq --raw-output '.["${{ inputs.key }}"]' /tmp/hassio-version/${{ inputs.channel }}.json)
+        version=$(jq --raw-output '.["${{ inputs.key }}"]' /tmp/version/${{ inputs.channel }}.json)
         echo "::set-output name=version::$version"
 
     - shell: bash
       run: |
-        sed -i "s|\"${{ inputs.key }}\": \"${{ steps.version.outputs.version }}\"|\"${{ inputs.key }}\": \"${{ inputs.version }}\"|g" /tmp/hassio-version/${{ inputs.channel }}.json
+        sed -i "s|\"${{ inputs.key }}\": \"${{ steps.version.outputs.version }}\"|\"${{ inputs.key }}\": \"${{ inputs.version }}\"|g" /tmp/version/${{ inputs.channel }}.json
 
     - shell: bash
       run: |
-        cd /tmp/hassio-version || exit 1
+        cd /tmp/version || exit 1
         git commit -am "Bump ${{ inputs.key }} from ${{ steps.version.outputs.version }} to ${{ inputs.version }}"
         git push
