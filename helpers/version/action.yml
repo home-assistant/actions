@@ -33,7 +33,9 @@ runs:
       run: |
         version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
 
-        if [[ "${version}" == "master" ]] || [[ "${version}" == "main" ]];then
+        if [[ ! -z "${{ github.event.inputs.version }}" ]]; then
+          version="${{ github.event.inputs.version }}"
+        elif [[ "${version}" == "master" ]] || [[ "${version}" == "main" ]];then
           commit_count="$(git rev-list --count --since=yesterday HEAD)"
           calver_date="$(date "+%Y.%m.dev%d")"
           commit_count="$(printf "%02d" ${commit_count})"
@@ -42,7 +44,9 @@ runs:
           version="${{ github.sha }}"
         fi
 
-        if [[ "${{ github.event_name }}" == "release" ]]; then
+        if [[ ! -z "${{ github.event.inputs.stable }}" ]]; then
+          stable="${{ github.event.inputs.stable }}"
+        elif [[ "${{ github.event_name }}" == "release" ]]; then
           stable="true"
         else
           stable="false"
@@ -60,7 +64,9 @@ runs:
     - shell: bash
       id: channel
       run: |
-        if [[ "${{ inputs.type }}" == "plugin" ]] || [[ "${{ inputs.type }}" == "supervisor" ]]; then
+        if [[ ! -z "${{ github.event.inputs.channel }}" ]]; then
+          echo "::set-output name=channel::${{ github.event.inputs.channel }}"
+        elif [[ "${{ inputs.type }}" == "plugin" ]] || [[ "${{ inputs.type }}" == "supervisor" ]]; then
           if [[ "${{ steps.version.outputs.stable }}" == "true" ]]; then
             echo "::set-output name=channel::beta"
           else
@@ -71,7 +77,9 @@ runs:
     - shell: bash
       id: publish
       run: |
-        if [[ "${{ inputs.type }}" == "plugin" ]] || [[ "${{ inputs.type }}" == "supervisor" ]]; then
+        if [[ ! -z "${{ github.event.inputs.publish }}" ]]; then
+            echo "::set-output name=publish::${{ github.event.inputs.publish }}"
+        elif [[ "${{ inputs.type }}" == "plugin" ]] || [[ "${{ inputs.type }}" == "supervisor" ]]; then
           if [[ ! -z "${{ github.head_ref }}" ]]; then
             echo "::set-output name=publish::false"
           elif [[ "${{ github.event_name }}" == "release" ]] || [[ "${{ github.event_name }}" == "push" ]]; then
