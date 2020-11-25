@@ -29,7 +29,7 @@ runs:
     - shell: bash
       run: |
         temp=$(mktemp)
-        jq '."${{ inputs.key }}" |= "${{ inputs.version }}"' "/tmp/version/${{ inputs.channel }}.json" > "${temp}"
+        jq '.${{ inputs.key }} |= "${{ inputs.version }}"' "/tmp/version/${{ inputs.channel }}.json" > "${temp}"
         mv "${temp}" "/tmp/version/${{ inputs.channel }}.json"
 
     - shell: bash
