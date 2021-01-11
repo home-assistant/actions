@@ -1,0 +1,27 @@
+name: 'Home Assistant helper: verify-version'
+description: 'GitHub action helper: verify-version'
+inputs:
+  ignore-dev:
+    description: Skip check if the branch is 'dev'
+    required: false
+    default: false
+  ignore-master:
+    description: Skip check if the branch is 'master'
+    required: false
+    default: false
+runs:
+  using: "composite"
+  steps: 
+    - shell: bash
+      run: |
+        setup_version="$(python3 setup.py -V)"
+        branch_version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
+
+        if [[ "${{ inputs.ignore-dev }}" =~ true|True ]] && [ "${branch_version}" == "dev" ]; then
+          exit 0
+        elif [[ "${{ inputs.ignore-master }}" =~ true|True ]] && [ "${branch_version}" == "master" ]; then
+          exit 0
+        elif [ "${setup_version}" != "${branch_version}" ]; then
+          echo "Version of tag ${branch_version} don't match with ${setup_version}!"
+          exit 1
+        fi
