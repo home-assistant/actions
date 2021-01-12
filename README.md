@@ -37,5 +37,6 @@ _A collection of GitHub Action helpers, these are considered internal to the Hom
 - [git-init](./helpers/git-init/action.yml)
 - [info](./helpers/info/action.yml)
 - [jq](./helpers/jq/action.yml)
+- [verify-version](./helpers/action.yml)
 - [version](./helpers/version/action.yml)
 - [version-push](./helpers/version-push/action.yml)
