@@ -1,0 +1,14 @@
+{
+	"problemMatcher": [
+        {
+            "owner": "hassfest",
+            "pattern": [
+                {
+                    "regexp": "^\\* \\[(ERROR|WARNING)\\] (.*)$",
+                    "severity": 1,
+                    "message": 2
+                }
+            ]
+        }
+    ]
+}
