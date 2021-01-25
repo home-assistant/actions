@@ -1,12 +1,9 @@
 FROM homeassistant/home-assistant:beta
 
 COPY entrypoint.sh /entrypoint.sh
-COPY problem-matcher.json /problem-matcher.json
 COPY requirements.txt .
 
-RUN \
-    pip3 install -r requirements.txt \
-    && echo "::add-matcher::/problem-matcher.json"
+RUN pip3 install -r requirements.txt
 
 WORKDIR "/github/workspace"
 ENTRYPOINT ["/entrypoint.sh"]
