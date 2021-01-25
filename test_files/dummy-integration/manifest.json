@@ -1,3 +1,4 @@
 {
-    "domain": "dummy-integration"
+    "domain": "dummy-integration",
+    "codeowners": "@octocat"
 }

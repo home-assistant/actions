@@ -2,8 +2,6 @@
 declare -a integrations
 declare integration_path
 
-echo "::add-matcher::/problem-matcher.json"
-
 shopt -s globstar nullglob
 for manifest in **/manifest.json; do
     integration_path=$(dirname "${manifest}")
