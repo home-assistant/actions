@@ -1,4 +1,5 @@
 {
     "domain": "dummy-integration",
-    "codeowners": "@octocat"
+    "documentation": "https://github.com/home-assistant/actions",
+    "codeowners": ["@octocat"]
 }
