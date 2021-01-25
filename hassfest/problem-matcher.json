@@ -4,7 +4,7 @@
             "owner": "hassfest",
             "pattern": [
                 {
-                    "regexp": "^\\* \\[(ERROR|WARNING)\\] (.*)$",
+                    "regexp": "^\\*\\s\\[(ERROR|WARNING)\\]\\s(.*)$",
                     "severity": 1,
                     "message": 2
                 }
