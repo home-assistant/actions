@@ -14,6 +14,8 @@ runs:
   steps: 
     - shell: bash
       run: |
+        python3 -m pip install setuptools
+
         setup_version="$(python3 setup.py -V)"
         branch_version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
 
