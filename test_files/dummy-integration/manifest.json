@@ -1,6 +1,7 @@
 {
     "domain": "dummy-integration",
     "name": "dummy",
+    "version": "0.1.0-alpha.1",
     "documentation": "https://github.com/home-assistant/actions",
     "codeowners": ["@octocat"]
 }
