@@ -1,0 +1,29 @@
+name: 'Home Assistant helper: CodeNotary'
+description: 'GitHub action helper: CodeNotary'
+inputs:
+  user:
+    description: Username for CodeNotary login
+    required: true
+  password:
+    description: Password for CodeNotary login
+    required: true
+  organisation:
+    description: Organisation for CodeNotary signing
+    required: true
+  source:
+    description: Source for CodeNotary signing
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: bash <(curl https://getvcn.codenotary.com -L)
+    - shell: bash
+      run: |
+        vcn login
+        vcn notarize --public ${{ input.source }}
+      env:
+        VCN_USER: ${{ input.user }}
+        VCN_PASSWORD: ${{ input.password }}
+        VCN_ORG: ${{ input.organisation }}
