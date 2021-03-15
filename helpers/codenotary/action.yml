@@ -22,8 +22,8 @@ runs:
     - shell: bash
       run: |
         vcn login
-        vcn notarize --public ${{ input.source }}
+        vcn notarize --public ${{ inputs.source }}
       env:
-        VCN_USER: ${{ input.user }}
-        VCN_PASSWORD: ${{ input.password }}
-        VCN_ORG: ${{ input.organisation }}
+        VCN_USER: ${{ inputs.user }}
+        VCN_PASSWORD: ${{ inputs.password }}
+        VCN_ORG: ${{ inputs.organisation }}
