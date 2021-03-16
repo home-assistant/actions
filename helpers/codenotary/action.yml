@@ -24,6 +24,8 @@ runs:
         vcn login
         vcn notarize --public ${{ inputs.source }}
       env:
+        VCN_OTP_EMPTY: true
         VCN_USER: ${{ inputs.user }}
         VCN_PASSWORD: ${{ inputs.password }}
+        VCN_NOTARIZATION_PASSWORD: ${{ inputs.password }}
         VCN_ORG: ${{ inputs.organisation }}
