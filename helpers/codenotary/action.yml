@@ -35,7 +35,7 @@ runs:
         VCN_ORG: ${{ inputs.organisation }}
 
     - shell: bash
-      if: steps.verify.need == 'true'
+      if: steps.verify.outputs.need == 'true'
       run: |
         vcn login
         vcn notarize --public ${{ inputs.source }}
