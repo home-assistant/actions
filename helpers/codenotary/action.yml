@@ -23,7 +23,7 @@ runs:
     - shell: bash
       id: verify
       run: |
-        state="$(vcn authenticate --output json ${{ inputs.source }} | json '.verification.status // 2')"
+        state="$(vcn authenticate --output json ${{ inputs.source }} | jq '.verification.status // 2')"
         if [[ "${state}" == "2" ]]; then
           need=true
         else
