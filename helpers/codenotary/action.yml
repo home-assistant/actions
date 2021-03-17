@@ -28,6 +28,7 @@ runs:
           need=true
         else
           need=false
+          echo "Target is already verified."
         fi
         echo "::set-output name=need::${need}"
       env:
