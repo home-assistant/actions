@@ -21,27 +21,18 @@ runs:
       run: bash <(curl https://getvcn.codenotary.com -L)
 
     - shell: bash
-      id: verify
       run: |
         state="$(vcn authenticate --output json ${{ inputs.source }} | jq '.verification.status // 2')"
         if [[ "${state}" == "2" ]]; then
-          need=true
+          vcn login
+          vcn notarize --public ${{ inputs.source }}
         else
           need=false
           echo "Target is already verified."
         fi
-        echo "::set-output name=need::${need}"
       env:
         VCN_ORG: ${{ inputs.organisation }}
-
-    - shell: bash
-      if: steps.verify.outputs.need == 'true'
-      run: |
-        vcn login
-        vcn notarize --public ${{ inputs.source }}
-      env:
         VCN_OTP_EMPTY: true
         VCN_USER: ${{ inputs.user }}
         VCN_PASSWORD: ${{ inputs.password }}
         VCN_NOTARIZATION_PASSWORD: ${{ inputs.password }}
-        VCN_ORG: ${{ inputs.organisation }}
