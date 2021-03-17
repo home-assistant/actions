@@ -27,7 +27,6 @@ runs:
           vcn login
           vcn notarize --public ${{ inputs.source }}
         else
-          need=false
           echo "Target is already verified."
         fi
       env:
