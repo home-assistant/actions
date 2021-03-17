@@ -22,7 +22,10 @@ runs:
     - shell: bash
       run: |
         vcn login
-        vcn notarize --public ${{ inputs.source }}
+
+        for url in ${{ inputs.source }}; do
+          vcn notarize --public "${url}"
+        done
       env:
         VCN_OTP_EMPTY: true
         VCN_USER: ${{ inputs.user }}
