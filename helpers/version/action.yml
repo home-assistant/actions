@@ -35,15 +35,24 @@ runs:
 
         if [[ ! -z "${{ github.event.inputs.version }}" ]]; then
           version="${{ github.event.inputs.version }}"
-        elif [[ "${version}" == "master" ]] || [[ "${version}" == "main" ]];then
+
+        elif [[ "${version}" =~ (master|main) && "${{ inputs.type }}" =~ (supervisor|plugin|generic) ]]; then
           today="$(date --utc '+%Y-%m-%d')"
           midnight_timestamp="$(date --utc +%s --date=$today)"
           calver_date="$(date --utc --date=$today '+%Y.%m.dev%d')"
           commit_count="$(git rev-list --count --since=$midnight_timestamp HEAD)"
           commit_count="$(printf "%02d" ${commit_count})"
           version="${calver_date}${commit_count}"
-        elif [[ "${version}" == "merge" ]]; then
+
+        elif [[ "${version}" == "merge" && "${{ inputs.type }}" =~ (supervisor|plugin|generic) ]]; then
           version="${{ github.sha }}"
+
+        elif [[ "${version}" == "dev" && "${{ inputs.type }}" == "core" ]]; then
+          python3 -m pip install packaging
+          python3 -m pip install .
+          python3 script/version_bump.py nightly
+          version="$(python setup.py -V)"
+
         fi
 
         if [[ ! -z "${{ github.event.inputs.stable }}" ]]; then
@@ -68,11 +77,21 @@ runs:
       run: |
         if [[ ! -z "${{ github.event.inputs.channel }}" ]]; then
           echo "::set-output name=channel::${{ github.event.inputs.channel }}"
-        elif [[ "${{ inputs.type }}" == "plugin" ]] || [[ "${{ inputs.type }}" == "supervisor" ]]; then
+
+        elif [[ "${{ inputs.type }}" =~ (plugin|supervisor) ]]; then
           if [[ "${{ steps.version.outputs.stable }}" == "true" ]]; then
             echo "::set-output name=channel::beta"
           else
             echo "::set-output name=channel::dev"
+          fi
+
+        elif [[ "${{ inputs.type }}" == "core" ]]; then
+          if [[ "${{ steps.version.outputs.version }}" =~ dev ]]; then
+            echo "::set-output name=channel::dev"
+          elif [[ "${{ steps.version.outputs.version }}" =~ b ]]; then
+            echo "::set-output name=channel::beta"
+          else
+            echo "::set-output name=channel::stable"
           fi
         fi
 
@@ -81,12 +100,16 @@ runs:
       run: |
         if [[ ! -z "${{ github.event.inputs.publish }}" ]]; then
             echo "::set-output name=publish::${{ github.event.inputs.publish }}"
-        elif [[ "${{ inputs.type }}" == "plugin" ]] || [[ "${{ inputs.type }}" == "supervisor" ]]; then
+
+        elif [[ "${{ inputs.type }}" =~ (plugin|supervisor) ]]; then
           if [[ ! -z "${{ github.head_ref }}" ]]; then
             echo "::set-output name=publish::false"
-          elif [[ "${{ github.event_name }}" == "release" ]] || [[ "${{ github.event_name }}" == "push" ]]; then
+          elif [[ "${{ github.event_name }}" =~ (release|push) ]]; then
             echo "::set-output name=publish::true"
           else
             echo "::set-output name=publish::false"
           fi
+
+        elif [[ "${{ inputs.type }}" == "core" ]]; then
+          echo "::set-output name=publish::true"
         fi
