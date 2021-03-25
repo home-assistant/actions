@@ -111,5 +111,9 @@ runs:
           fi
 
         elif [[ "${{ inputs.type }}" == "core" ]]; then
-          echo "::set-output name=publish::true"
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            echo "::set-output name=publish::true"
+          else
+            echo "::set-output name=publish::false"
+          fi
         fi
