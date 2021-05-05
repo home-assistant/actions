@@ -4,5 +4,5 @@
     "documentation": "https://github.com/home-assistant/actions",
     "version": "1.0.0",
     "codeowners": ["@octocat"],
-    "iot_class": "internal"
+    "iot_class": "calculated"
 }
