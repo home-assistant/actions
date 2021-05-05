@@ -3,5 +3,6 @@
     "name": "dummy",
     "documentation": "https://github.com/home-assistant/actions",
     "version": "1.0.0",
-    "codeowners": ["@octocat"]
+    "codeowners": ["@octocat"],
+    "iot_class": "internal"
 }
