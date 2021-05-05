@@ -46,3 +46,6 @@ runs:
         cd /tmp/version
         git commit -am "Bump ${{ steps.validate-input.outputs.key-description }} to ${{ inputs.version }}"
         git push
+
+    - shell: bash
+      run: rm -rf /tmp/version
