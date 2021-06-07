@@ -23,8 +23,10 @@ runs:
   steps:
     - shell: bash
       run: |
-        sudo curl -Lo /usr/local/bin/vcn https://github.com/vchain-us/vcn/releases/download/${{ inputs.vcn_version }}/vcn-${{ inputs.vcn_version }}-linux-amd64-static
-        sudo chmod a+x /usr/local/bin/vcn
+        mkdir -p "${{ github.action_path }}/bin"
+        curl -Lo "${{ github.action_path }}/bin/vcn" https://github.com/vchain-us/vcn/releases/download/${{ inputs.vcn_version }}/vcn-${{ inputs.vcn_version }}-linux-amd64-static
+        chmod a+x "${{ github.action_path }}/bin/vcn"
+        echo "${{ github.action_path }}/bin" >> "$GITHUB_PATH"
 
     - shell: bash
       run: |
