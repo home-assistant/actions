@@ -13,13 +13,17 @@ inputs:
   source:
     description: Source for CodeNotary signing
     required: true
+  vcn_version:
+    description: CodeNotary VCN version
+    required: false
+    default: "v0.9.6"
 
 runs:
   using: "composite"
   steps:
     - shell: bash
       run: |
-        sudo curl -Lo /usr/local/bin/vcn https://github.com/vchain-us/vcn/releases/download/v0.9.6/vcn-v0.9.6-linux-amd64-static
+        sudo curl -Lo /usr/local/bin/vcn https://github.com/vchain-us/vcn/releases/download/${{ inputs.vcn_version }}/vcn-${{ inputs.vcn_version }}-linux-amd64-static
         sudo chmod a+x /usr/local/bin/vcn
 
     - shell: bash
