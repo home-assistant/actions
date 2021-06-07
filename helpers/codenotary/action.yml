@@ -30,8 +30,7 @@ runs:
 
     - shell: bash
       run: |
-        state="$(vcn authenticate --output json ${{ inputs.source }} | jq '.verification.status // 2')"
-        if [[ "${state}" == "2" ]]; then
+        if ! vcn authenticate --silent ${{ inputs.source }}; then
           vcn login
           vcn notarize --public ${{ inputs.source }}
         else
