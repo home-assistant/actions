@@ -7,8 +7,8 @@ inputs:
   password:
     description: Password for CodeNotary login
     required: true
-  organisation:
-    description: Organisation for CodeNotary signing
+  signer:
+    description: Organisation or signerID for CodeNotary signing
     required: true
   source:
     description: Source for CodeNotary signing
@@ -22,7 +22,13 @@ runs:
 
     - shell: bash
       run: |
-        state="$(vcn authenticate --output json ${{ inputs.source }} | jq '.verification.status // 2')"
+        if [[ "$VCN_SIGNER" =~ ^0x ]]; then
+          local vcn_cli=("--signerID")
+        else
+          local vcn_cli=("--org")
+        fi
+
+        state="$(vcn authenticate "$vcn_cli" "$VCN_SIGNER" --output json ${{ inputs.source }} | jq '.verification.status // 2')"
         if [[ "${state}" == "2" ]]; then
           vcn login
           vcn notarize --public ${{ inputs.source }}
@@ -30,7 +36,7 @@ runs:
           echo "Target is already verified."
         fi
       env:
-        VCN_ORG: ${{ inputs.organisation }}
+        VCN_SIGNER: ${{ inputs.signer }}
         VCN_OTP_EMPTY: true
         VCN_USER: ${{ inputs.user }}
         VCN_PASSWORD: ${{ inputs.password }}
