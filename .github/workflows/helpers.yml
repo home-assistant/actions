@@ -21,3 +21,16 @@ jobs:
         uses: ./helpers/jq
         with:
           path: test_files
+
+  vcn:
+    runs-on: ubuntu-latest
+    name: vcn
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+      
+      - name: Run action
+        uses: ./helpers/vcn
+
+      - name: Verify installation
+        run: which vcn
