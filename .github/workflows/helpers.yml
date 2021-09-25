@@ -41,11 +41,13 @@ jobs:
     strategy:
       fail-fast: False
       matrix:
-        path: 
-          - "build_json"
-          - "build_yaml"
-          - "config_json"
-          - "config_yaml"
+        file:
+          - "build"
+          - "config"
+        type: 
+          - "json"
+          - "yaml"
+
     steps:
       - name: Check out the repository
         uses: actions/checkout@v2
@@ -54,7 +56,7 @@ jobs:
         uses: ./helpers/info
         id: info
         with:
-          path: "test_files/${{ matrix.path }}"
+          path: "test_files/${{ matrix.file }}.${{ matrix.type }}"
 
       - name: Validate result
         run: |

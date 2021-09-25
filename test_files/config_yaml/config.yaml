@@ -1,7 +1,7 @@
 ---
 arch:
-  - armhf
-  - armv7
   - aarch64
+  - armv7
+  - armhf
   - amd64
   - i386
