@@ -57,7 +57,7 @@ jobs:
           path: ${{ matrix.path }}
 
       - name: Validate result
-        runs: |
+        run: |
           if [[ "${{ steps.info.outputs.architectures }}" != '["aarch64","armv7","armhf","amd64","i386"]' ]]; then
             exit 1
           fi
