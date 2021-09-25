@@ -34,3 +34,30 @@ jobs:
 
       - name: Verify installation
         run: which vcn
+
+  info:
+    runs-on: ubuntu-latest
+    name: info
+    strategy:
+      fail-fast: False
+      matrix:
+        path: 
+          - "test_files/build_json"
+          - "test_files/build_yaml"
+          - "test_files/config_json"
+          - "test_files/config_yaml"
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Test
+        uses: ./helpers/info
+        id: info
+        with:
+          path: ${{ matrix.path }}
+
+      - name: Validate result
+        runs: |
+          if [[ "${{ steps.info.outputs.architectures }}" != '["aarch64","armv7","armhf","amd64","i386"]' ]]; then
+            exit 1
+          fi

@@ -15,11 +15,20 @@ runs:
     - shell: bash
       id: architectures
       run: |
-        if [[ -f "${{ inputs.path }}/build.json" ]]; then
-          archs=$(jq -r '.build_from |  keys | [ .[] | tostring ] | @json' "${{ inputs.path }}/build.json")
-        elif [[ -f "${{ inputs.path }}/config.json" ]]; then
-          archs=$(jq -r '.arch | [ .[] | tostring ] | @json' "${{ inputs.path }}/config.json")
-        else
-          archs=[]
-        fi
+        archs=[]
+        mkdir -p "${{ github.action_path }}/bin"
+        wget -q -O "${{ github.action_path }}/bin/yq" https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+        chmod a+x "${{ github.action_path }}/bin/yq"
+        echo "${{ github.action_path }}/bin" >> "$GITHUB_PATH"
+
+        for file_type in json yml yaml; do
+          if [[ -f "${{ inputs.path }}/build.${file_type}" ]]; then
+            archs=$(yq e -N -M '.build_from | keys' -o=json -I=0 "${{ inputs.path }}/build.${file_type}")
+            break
+          elif [[ -f "${{ inputs.path }}/config.${file_type}" ]]; then
+            archs=$(yq e -N -M '.arch' -o=json -I=0 "${{ inputs.path }}/config.${file_type}")
+            break
+          fi
+        done
+
         echo "::set-output name=architectures::$archs"

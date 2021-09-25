@@ -1,0 +1,7 @@
+---
+arch:
+  - armhf
+  - armv7
+  - aarch64
+  - amd64
+  - i386
