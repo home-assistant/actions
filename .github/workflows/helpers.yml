@@ -56,7 +56,7 @@ jobs:
         uses: ./helpers/info
         id: info
         with:
-          path: "test_files/${{ matrix.file }}.${{ matrix.type }}"
+          path: "test_files/${{ matrix.file }}_${{ matrix.type }}"
 
       - name: Validate result
         run: |
