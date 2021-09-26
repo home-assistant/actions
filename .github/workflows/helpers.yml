@@ -77,6 +77,6 @@ jobs:
 
       - name: Validate result
         run: |
-          if [[ '${{ steps.addons.outputs.addons }}' != '["aarch64","armv7","armhf","amd64","i386"]' ]]; then
+          if [[ '${{ steps.addons.outputs.addons }}' != 'test_files' ]]; then
             exit 1
           fi
