@@ -11,7 +11,7 @@ runs:
       id: addons
       run: |
         declare -a addons
-        for addon in $(find ./ -maxdepth 1 -name config.json -o -name config.yaml -o -name config.yml | cut -d "/" -f2 | sort -u); do
+        for addon in $(find ./ -maxdepth 2 -name config.json -o -name config.yaml -o -name config.yml | cut -d "/" -f2 | sort -u); do
           addons+=("$addon");
         done
         echo "Found addons: ${addons[@]}"
