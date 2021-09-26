@@ -22,11 +22,9 @@ runs:
   using: "composite"
   steps:
     - shell: bash
-      run: |
-        mkdir -p "${{ github.action_path }}/bin"
-        curl -Lo "${{ github.action_path }}/bin/vcn" https://github.com/codenotary/vcn/releases/download/${{ inputs.vcn_version }}/vcn-${{ inputs.vcn_version }}-linux-amd64-static
-        chmod a+x "${{ github.action_path }}/bin/vcn"
-        echo "${{ github.action_path }}/bin" >> "$GITHUB_PATH"
+      uses: ./helpers/vcn
+      with:
+        vcn_version: ${{ inputs.vcn_version }}
 
     - shell: bash
       run: |
