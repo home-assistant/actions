@@ -1,0 +1,18 @@
+name: 'Home Assistant helper: find-addons'
+description: 'Find all add-ons directories in the repository'
+outputs:
+  addons:
+    description: Returns a list of all add-ons in the repository
+    value: ${{ steps.addons.outputs.addons }}
+runs:
+  using: "composite"
+  steps: 
+    - shell: bash
+      id: addons
+      run: |
+        declare -a addons
+        for addon in $(find ./ -maxdepth 1 -name config.json -o -name config.yaml -o -name config.yml | cut -d "/" -f2 | sort -u); do
+          addons+=("$addon");
+        done
+        echo "Found addons: ${addons[@]}"
+        echo "::set-output name=addons::${addons[@]}"
