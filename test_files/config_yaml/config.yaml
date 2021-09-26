@@ -5,3 +5,5 @@ arch:
   - armhf
   - amd64
   - i386
+image: "ghcr.io/example/{arch}-example"
+version: "1.0.0"

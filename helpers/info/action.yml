@@ -8,14 +8,23 @@ inputs:
 outputs:
   architectures:
     description: Returns the supported architectures
-    value: ${{ steps.architectures.outputs.architectures }}
+    value: ${{ steps.info.outputs.architectures }}
+  image:
+    description: Returns the image defined in the config file for add-ons if any
+    value: ${{ steps.info.outputs.image }}
+  version:
+    description: Returns the version defined in the config file for add-ons if any
+    value: ${{ steps.info.outputs.version }}
 runs:
   using: "composite"
   steps: 
     - shell: bash
-      id: architectures
+      id: info
       run: |
         archs=[]
+        image=""
+        version=""
+
         mkdir -p "${{ github.action_path }}/bin"
         wget -q -O "${{ github.action_path }}/bin/yq" https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
         chmod a+x "${{ github.action_path }}/bin/yq"
@@ -27,8 +36,16 @@ runs:
             break
           elif [[ -f "${{ inputs.path }}/config.${file_type}" ]]; then
             archs=$(yq e -N -M '.arch' -o=json -I=0 "${{ inputs.path }}/config.${file_type}")
+            image=$(yq e -N -M '.image' -o=json -I=0 "${{ inputs.path }}/config.${file_type}")
+            version=$(yq e -N -M '.version' -o=json -I=0 "${{ inputs.path }}/config.${file_type}")
             break
           fi
         done
 
+        echo "Architectures: $archs"
+        echo "Image: $image"
+        echo "Version: $version"
+
         echo "::set-output name=architectures::$archs"
+        echo "::set-output name=image::$image"
+        echo "::set-output name=version::$version"
