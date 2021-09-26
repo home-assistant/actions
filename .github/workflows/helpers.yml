@@ -58,8 +58,22 @@ jobs:
         with:
           path: "test_files/${{ matrix.file }}_${{ matrix.type }}"
 
-      - name: Validate result
+      - name: Validate architectures
         run: |
           if [[ '${{ steps.info.outputs.architectures }}' != '["aarch64","armv7","armhf","amd64","i386"]' ]]; then
+            exit 1
+          fi
+
+      - name: Validate image
+        if: matrix.file == 'config'
+        run: |
+          if [[ '${{ steps.info.outputs.image }}' != 'ghcr.io/example/{arch}-example' ]]; then
+            exit 1
+          fi
+
+      - name: Validate version
+        if: matrix.file == 'config'
+        run: |
+          if [[ '${{ steps.info.outputs.version }}' != '1.0.0' ]]; then
             exit 1
           fi

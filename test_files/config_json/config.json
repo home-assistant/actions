@@ -1,3 +1,5 @@
 {
-    "arch": ["aarch64","armv7","armhf","amd64","i386"]
+    "arch": ["aarch64","armv7","armhf","amd64","i386"],
+    "image": "ghcr.io/example/{arch}-example",
+    "version": "1.0.0"
 }
