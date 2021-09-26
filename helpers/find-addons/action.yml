@@ -4,6 +4,9 @@ outputs:
   addons:
     description: Returns a list of all add-ons in the repository
     value: ${{ steps.addons.outputs.addons }}
+  addons_list:
+    description: Returns a JSON list of all add-ons in the repository
+    value: ${{ steps.addons.outputs.addons_list }}
 runs:
   using: "composite"
   steps: 
@@ -11,8 +14,16 @@ runs:
       id: addons
       run: |
         declare -a addons
+        declare -a addons_list
+
         for addon in $(find ./ -maxdepth 2 -name config.json -o -name config.yaml -o -name config.yml | cut -d "/" -f2 | sort -u); do
-          addons+=("$addon");
+          addons+=("${addon}");
+          addons_list+=("\"${addon}\",");
         done
+
+        json_list=$(echo ${addons_list[@]} | rev | cut -c 2- | rev)
+
         echo "Found addons: ${addons[@]}"
-        echo "::set-output name=addons::${addons[@]}"
+        echo "Found addons (JSON): [${json_list}]"
+        echo "::set-output name=addons::${addons_list[@]}"
+        echo "::set-output name=addons_list::[${json_list}]"
