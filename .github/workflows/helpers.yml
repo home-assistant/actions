@@ -63,3 +63,20 @@ jobs:
           if [[ '${{ steps.info.outputs.architectures }}' != '["aarch64","armv7","armhf","amd64","i386"]' ]]; then
             exit 1
           fi
+
+  find-addons:
+    runs-on: ubuntu-latest
+    name: find-addons
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Test
+        uses: ./helpers/find-addons
+        id: addons
+
+      - name: Validate result
+        run: |
+          if [[ '${{ steps.addons.outputs.addons }}' != '["aarch64","armv7","armhf","amd64","i386"]' ]]; then
+            exit 1
+          fi
