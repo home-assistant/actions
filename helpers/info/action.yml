@@ -36,9 +36,14 @@ runs:
             break
           elif [[ -f "${{ inputs.path }}/config.${file_type}" ]]; then
             archs=$(yq e -N -M '.arch' -o=json -I=0 "${{ inputs.path }}/config.${file_type}")
+            break
+          fi
+        done
+
+        for file_type in json yml yaml; do
+          if [[ -f "${{ inputs.path }}/config.${file_type}" ]]; then
             image=$(yq e -N -M '.image' -o=json -I=0 "${{ inputs.path }}/config.${file_type}")
             version=$(yq e -N -M '.version' -o=json -I=0 "${{ inputs.path }}/config.${file_type}")
-            break
           fi
         done
 
