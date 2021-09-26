@@ -74,6 +74,6 @@ jobs:
       - name: Validate version
         if: matrix.file == 'config'
         run: |
-          if [[ '${{ steps.info.outputs.version }}' != '1.0.0' ]]; then
+          if [[ '${{ steps.info.outputs.version }}' != '"1.0.0"' ]]; then
             exit 1
           fi
