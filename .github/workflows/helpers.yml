@@ -34,6 +34,19 @@ jobs:
 
       - name: Verify installation
         run: which vcn
+ 
+  cas:
+    runs-on: ubuntu-latest
+    name: cas
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+      
+      - name: Run action
+        uses: ./helpers/cas
+
+      - name: Verify installation
+        run: which cas
 
   info:
     runs-on: ubuntu-latest

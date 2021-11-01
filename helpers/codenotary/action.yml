@@ -3,13 +3,16 @@ description: 'GitHub action helper: CodeNotary'
 inputs:
   user:
     description: Username for CodeNotary login
-    required: true
+    required: false
+    default: ""
   password:
     description: Password for CodeNotary login
-    required: true
+    required: false
+    default: ""
   organisation:
     description: Organisation for CodeNotary signing
-    required: true
+    required: false
+    default: ""
   source:
     description: Source for CodeNotary signing
     required: true
@@ -17,16 +20,33 @@ inputs:
     description: CodeNotary VCN version
     required: false
     default: "v0.9.8"
+  version:
+    description: CodeNotary CAS version
+    required: false
+    default: "v1.0.0"
+  token:
+    description: CodeNotary CAS API token
+    required: false
+    default: ""
+  signer:
+    description: CAS Signer ID/Email
+    required: false
+    default: "notary@home-assistant.io"
 
 runs:
   using: "composite"
   steps:
-    - shell: bash
-      uses: ./helpers/vcn
+    - uses: ./helpers/vcn
       with:
         vcn_version: ${{ inputs.vcn_version }}
 
+    - uses: ./helpers/cas
+      with:
+        version: ${{ inputs.version }}
+
     - shell: bash
+      name: CodeNotary depricated VCN
+      if: ${{ input.user != "" && input.password != "" && input.organisation != "" }}
       run: |
         if ! vcn authenticate --silent ${{ inputs.source }}; then
           vcn login
@@ -40,3 +60,17 @@ runs:
         VCN_USER: ${{ inputs.user }}
         VCN_PASSWORD: ${{ inputs.password }}
         VCN_NOTARIZATION_PASSWORD: ${{ inputs.password }}
+
+    - shell: bash
+      name: CodeNotary Open Source Attestation Service
+      if: ${{ input.signer != "" && input.token != "" }}
+      run: |
+        if ! cas authenticate --silent ${{ inputs.source }}; then
+          cas login
+          cas notarize --public ${{ inputs.source }}
+        else
+          echo "Target is already verified."
+        fi
+      env:
+        CAS_SIGNERID: ${{ input.signer }}
+        CAS_API_KEY: ${{ input.token }}
