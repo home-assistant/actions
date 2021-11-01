@@ -46,8 +46,11 @@ runs:
 
     - shell: bash
       name: CodeNotary depricated VCN
-      if: ${{ input.user != "" && input.password != "" && input.organisation != "" }}
       run: |
+        if [[ -z "${{ input.user }}" || -z "${{ input.password" }} || -z "${{ input.organisation }}" ]]; then
+          exit 0
+        fi
+
         if ! vcn authenticate --silent ${{ inputs.source }}; then
           vcn login
           vcn notarize --public ${{ inputs.source }}
@@ -63,8 +66,11 @@ runs:
 
     - shell: bash
       name: CodeNotary Open Source Attestation Service
-      if: ${{ input.signer != "" && input.token != "" }}
       run: |
+        if [[ -z "${{ input.signer }}" || -z "${{ input.token" }} ]]; then
+          exit 0
+        fi
+
         if ! cas authenticate --silent ${{ inputs.source }}; then
           cas login
           cas notarize --public ${{ inputs.source }}
