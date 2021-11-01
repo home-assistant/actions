@@ -47,7 +47,7 @@ runs:
     - shell: bash
       name: CodeNotary depricated VCN
       run: |
-        if [[ -z "${{ input.user }}" || -z "${{ input.password" }} || -z "${{ input.organisation }}" ]]; then
+        if [[ -z "${{ inputs.user }}" || -z "${{ inputs.password" }} || -z "${{ inputs.organisation }}" ]]; then
           exit 0
         fi
 
@@ -67,7 +67,7 @@ runs:
     - shell: bash
       name: CodeNotary Open Source Attestation Service
       run: |
-        if [[ -z "${{ input.signer }}" || -z "${{ input.token" }} ]]; then
+        if [[ -z "${{ inputs.signer }}" || -z "${{ inputs.token" }} ]]; then
           exit 0
         fi
 
@@ -78,5 +78,5 @@ runs:
           echo "Target is already verified."
         fi
       env:
-        CAS_SIGNERID: ${{ input.signer }}
-        CAS_API_KEY: ${{ input.token }}
+        CAS_SIGNERID: ${{ inputs.signer }}
+        CAS_API_KEY: ${{ inputs.token }}
