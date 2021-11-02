@@ -36,11 +36,11 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: ./helpers/vcn
+    - uses: home-assistant/actions/helpers/vcn@master
       with:
         vcn_version: ${{ inputs.vcn_version }}
 
-    - uses: ./helpers/cas
+    - uses: home-assistant/actions/helpers/cas@master
       with:
         version: ${{ inputs.version }}
 
