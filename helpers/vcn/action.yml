@@ -2,7 +2,7 @@ name: 'Home Assistant helper: VCN'
 description: 'GitHub action helper: VCN'
 inputs:
   vcn_version:
-    description: CodeNotary VCN version
+    description: Codenotary VCN version
     required: false
     default: "v0.9.8"
 
