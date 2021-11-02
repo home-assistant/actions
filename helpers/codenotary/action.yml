@@ -47,7 +47,7 @@ runs:
     - shell: bash
       name: Codenotary depricated VCN
       run: |
-        if [[ -z "${{ inputs.user }}" || -z "${{ inputs.password" }} || -z "${{ inputs.organisation }}" ]]; then
+        if [[ -z "${{ inputs.user }}" || -z "${{ inputs.password }}" || -z "${{ inputs.organisation }}" ]]; then
           exit 0
         fi
 
@@ -67,7 +67,7 @@ runs:
     - shell: bash
       name: Codenotary Open Source Attestation Service
       run: |
-        if [[ -z "${{ inputs.signer }}" || -z "${{ inputs.token" }} ]]; then
+        if [[ -z "${{ inputs.signer }}" || -z "${{ inputs.token }}" ]]; then
           exit 0
         fi
 
