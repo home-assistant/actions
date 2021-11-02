@@ -1,0 +1,17 @@
+name: 'Home Assistant helper: CAS'
+description: 'GitHub action helper: CAS'
+inputs:
+  version:
+    description: CodeNotary CAS version
+    required: false
+    default: "v1.0.0"
+
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        mkdir -p "${{ github.action_path }}/bin"
+        curl -Lo "${{ github.action_path }}/bin/cas" https://github.com/codenotary/cas/releases/download/${{ inputs.version }}/cas-${{ inputs.version }}-linux-amd64-static
+        chmod a+x "${{ github.action_path }}/bin/cas"
+        echo "${{ github.action_path }}/bin" >> "$GITHUB_PATH"

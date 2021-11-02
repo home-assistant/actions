@@ -3,13 +3,16 @@ description: 'GitHub action helper: CodeNotary'
 inputs:
   user:
     description: Username for CodeNotary login
-    required: true
+    required: false
+    default: ""
   password:
     description: Password for CodeNotary login
-    required: true
+    required: false
+    default: ""
   organisation:
     description: Organisation for CodeNotary signing
-    required: true
+    required: false
+    default: ""
   source:
     description: Source for CodeNotary signing
     required: true
@@ -17,19 +20,37 @@ inputs:
     description: CodeNotary VCN version
     required: false
     default: "v0.9.8"
+  version:
+    description: CodeNotary CAS version
+    required: false
+    default: "v1.0.0"
+  token:
+    description: CodeNotary CAS API token
+    required: false
+    default: ""
+  signer:
+    description: CAS Signer ID/Email
+    required: false
+    default: "notary@home-assistant.io"
 
 runs:
   using: "composite"
   steps:
-    - shell: bash
-      run: |
-        mkdir -p "${{ github.action_path }}/bin"
-        curl -Lo "${{ github.action_path }}/bin/vcn" https://github.com/codenotary/vcn/releases/download/${{ inputs.vcn_version }}/vcn-${{ inputs.vcn_version }}-linux-amd64-static
-        chmod a+x "${{ github.action_path }}/bin/vcn"
-        echo "${{ github.action_path }}/bin" >> "$GITHUB_PATH"
+    - uses: home-assistant/actions/helpers/vcn@master
+      with:
+        vcn_version: ${{ inputs.vcn_version }}
+
+    - uses: home-assistant/actions/helpers/cas@master
+      with:
+        version: ${{ inputs.version }}
 
     - shell: bash
+      name: CodeNotary depricated VCN
       run: |
+        if [[ -z "${{ inputs.user }}" || -z "${{ inputs.password" }} || -z "${{ inputs.organisation }}" ]]; then
+          exit 0
+        fi
+
         if ! vcn authenticate --silent ${{ inputs.source }}; then
           vcn login
           vcn notarize --public ${{ inputs.source }}
@@ -42,3 +63,20 @@ runs:
         VCN_USER: ${{ inputs.user }}
         VCN_PASSWORD: ${{ inputs.password }}
         VCN_NOTARIZATION_PASSWORD: ${{ inputs.password }}
+
+    - shell: bash
+      name: CodeNotary Open Source Attestation Service
+      run: |
+        if [[ -z "${{ inputs.signer }}" || -z "${{ inputs.token" }} ]]; then
+          exit 0
+        fi
+
+        if ! cas authenticate --silent ${{ inputs.source }}; then
+          cas login
+          cas notarize --public ${{ inputs.source }}
+        else
+          echo "Target is already verified."
+        fi
+      env:
+        CAS_SIGNERID: ${{ inputs.signer }}
+        CAS_API_KEY: ${{ inputs.token }}
