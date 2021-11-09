@@ -4,7 +4,7 @@ inputs:
   vcn_version:
     description: Codenotary VCN version
     required: false
-    default: "v0.9.8"
+    default: "v0.9.10"
 
 runs:
   using: "composite"
