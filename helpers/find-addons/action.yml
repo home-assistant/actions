@@ -25,5 +25,5 @@ runs:
 
         echo "Found addons: ${addons[@]}"
         echo "Found addons (JSON): [${json_list}]"
-        echo "::set-output name=addons::${addons_list[@]}"
+        echo "::set-output name=addons::${addons[@]}"
         echo "::set-output name=addons_list::[${json_list}]"
