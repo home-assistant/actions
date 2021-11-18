@@ -4,7 +4,7 @@ inputs:
   version:
     description: Codenotary CAS version
     required: false
-    default: "v1.0.0"
+    default: "v1.0.1"
 
 runs:
   using: "composite"

@@ -23,7 +23,7 @@ inputs:
   version:
     description: Codenotary CAS version
     required: false
-    default: "v1.0.0"
+    default: "v1.0.1"
   token:
     description: Codenotary CAS API token
     required: false
