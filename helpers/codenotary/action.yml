@@ -71,12 +71,11 @@ runs:
           exit 0
         fi
 
-        if ! cas authenticate --silent ${{ inputs.source }}; then
+        if ! cas authenticate --silent --signerID ${{ inputs.signer }} ${{ inputs.source }}; then
           cas login
           cas notarize --ci-attr ${{ inputs.source }}
         else
           echo "Target is already verified."
         fi
       env:
-        CAS_SIGNERID: ${{ inputs.signer }}
         CAS_API_KEY: ${{ inputs.token }}
