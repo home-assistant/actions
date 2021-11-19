@@ -73,7 +73,7 @@ runs:
 
         if ! cas authenticate --silent ${{ inputs.source }}; then
           cas login
-          cas notarize --public ${{ inputs.source }}
+          cas notarize --ci-attr ${{ inputs.source }}
         else
           echo "Target is already verified."
         fi
