@@ -73,7 +73,7 @@ runs:
 
         if ! cas authenticate --silent --signerID ${{ inputs.signer }} ${{ inputs.source }}; then
           CAS_API_KEY="${{ inputs.token }}" cas login
-          cas notarize --ci-attr ${{ inputs.source }}
+          CAS_API_KEY="${{ inputs.token }}" cas notarize --ci-attr ${{ inputs.source }}
         else
           echo "Target is already verified."
         fi
