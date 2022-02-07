@@ -18,7 +18,7 @@ runs:
           python3 -m pip install setuptools
           setup_version="$(python3 setup.py -V)"
         else
-          setup_version="$(python3 read_version.py setup.cfg)"
+          setup_version="$(python3 ${{ github.action_path }}/../read_version_cfg.py setup.cfg)"
         fi
 
         branch_version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )

@@ -55,7 +55,7 @@ runs:
           if [[ -e setup.py ]]; then
             version="$(python3 setup.py -V)"
           else
-            version="$(python3 read_version.py setup.cfg)"
+            version="$(python3 ${{ github.action_path }}/../read_version_cfg.py setup.cfg)"
           fi;
         fi
 
