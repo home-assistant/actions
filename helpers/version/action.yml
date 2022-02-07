@@ -6,21 +6,21 @@ inputs:
     required: false
     default: 'generic'
 outputs:
-  version: 
+  version:
     description: The version found for the requested type
     value: ${{ steps.version.outputs.version }}
-  stable: 
+  stable:
     description: Returns "true" if it is a stable build, else "false"
     value: ${{ steps.version.outputs.stable }}
-  channel: 
+  channel:
     description: Returns suggested channel.
     value: ${{ steps.channel.outputs.channel }}
-  publish: 
+  publish:
     description: Returns "true" if it should be published, else "false"
     value: ${{ steps.publish.outputs.publish }}
 runs:
   using: "composite"
-  steps: 
+  steps:
     - shell: bash
       run: |
         if [[ -z "${{ inputs.type }}" ]];then
@@ -51,7 +51,12 @@ runs:
           python3 -m pip install packaging
           python3 -m pip install .
           python3 script/version_bump.py nightly
-          version="$(python setup.py -V)"
+
+          if [[ -e setup.py ]]; then
+            version="$(python3 setup.py -V)"
+          else
+            version="$(python3 read_version.py setup.cfg)"
+          fi;
         fi
 
         if [[ ! -z "${{ github.event.inputs.stable }}" ]]; then
