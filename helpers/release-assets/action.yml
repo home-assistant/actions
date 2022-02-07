@@ -1,0 +1,44 @@
+name: 'Home Assistant helper: release-assets'
+description: 'GitHub action helper: release-assets'
+inputs:
+  github-token:
+    description: GITHUB_TOKEN with 'contents' write permission
+    required: true
+  folder:
+    description: Folder for distribution packages
+    required: false
+    default: "dist/"
+runs:
+  using: "composite"
+  steps:
+    - name: Fail if not release event
+      if: github.event_name != 'release'
+      shell: bash
+      run: |
+        echo "Action can only be run for 'release' events"
+        echo "Current event_name: ${{ github.event_name }}"
+        exit 1
+    - name: Get build file names
+      id: file-names
+      shell: bash
+      run: |
+        echo "::set-output name=sdist::$(ls ${{ inputs.folder }} | grep '.*.tar.gz' | tail -n 1)"
+        echo "::set-output name=wheel::$(ls ${{ inputs.folder }} | grep '.*.whl' | tail -n 1)"
+    - name: Upload release asset (sdist)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ${{ inputs.folder }}${{ steps.file-names.outputs.sdist }}
+        asset_name: ${{ steps.file-names.outputs.sdist }}
+        asset_content_type: application/gzip
+    - name: Upload release asset (wheel)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ${{ inputs.folder}}${{ steps.file-names.outputs.wheel }}
+        asset_name: ${{ steps.file-names.outputs.wheel }}
+        asset_content_type: application/zip
