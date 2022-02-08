@@ -9,9 +9,9 @@ def main(argv: list[str] | None = None) -> int:
     """Read version from setup.cfg file passed as first argument."""
     argv = argv or sys.argv[1:]
 
-    parser = configparser.ConfigParser()
     if (len(argv) < 1 or not Path(argv[0]).is_file()):
         return 1
+    parser = configparser.ConfigParser()
     parser.read(argv[0])
 
     print(parser["metadata"]["version"])
