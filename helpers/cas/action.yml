@@ -15,3 +15,7 @@ runs:
         curl -Lo "${{ github.action_path }}/bin/cas" https://github.com/codenotary/cas/releases/download/${{ inputs.version }}/cas-${{ inputs.version }}-linux-amd64-static
         chmod a+x "${{ github.action_path }}/bin/cas"
         echo "${{ github.action_path }}/bin" >> "$GITHUB_PATH"
+    - shell: bash
+      run: |
+        cp "${GITHUB_WORKSPACE}/helpers/cas/cas-trusted-signing-pub-key" ~/.cas-trusted-signing-pub-key
+        chmod 755 ~/.cas-trusted-signing-pub-key
