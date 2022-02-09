@@ -18,4 +18,3 @@ runs:
     - shell: bash
       run: |
         cp "${{ github.action_path }}/cas-trusted-signing-pub-key" ~/.cas-trusted-signing-pub-key
-        chmod 755 ~/.cas-trusted-signing-pub-key
