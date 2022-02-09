@@ -46,7 +46,9 @@ jobs:
         uses: ./helpers/cas
 
       - name: Verify installation
-        run: which cas
+        run: |
+          which cas
+          [ -f ~/.cas-trusted-signing-pub-key ]
 
   info:
     runs-on: ubuntu-latest
