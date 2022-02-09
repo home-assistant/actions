@@ -17,5 +17,5 @@ runs:
         echo "${{ github.action_path }}/bin" >> "$GITHUB_PATH"
     - shell: bash
       run: |
-        cp "${GITHUB_WORKSPACE}/helpers/cas/cas-trusted-signing-pub-key" ~/.cas-trusted-signing-pub-key
+        cp "${{ github.action_path }}/cas-trusted-signing-pub-key" ~/.cas-trusted-signing-pub-key
         chmod 755 ~/.cas-trusted-signing-pub-key
