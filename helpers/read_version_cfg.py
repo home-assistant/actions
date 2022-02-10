@@ -5,9 +5,9 @@ import sys
 from pathlib import Path
 
 
-def main(argv: list[str] | None = None) -> int:
+def main() -> int:
     """Read version from setup.cfg file passed as first argument."""
-    argv = argv or sys.argv[1:]
+    argv = sys.argv[1:]
 
     if (len(argv) < 1 or not Path(argv[0]).is_file()):
         return 1
