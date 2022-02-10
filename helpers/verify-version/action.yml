@@ -11,12 +11,16 @@ inputs:
     default: false
 runs:
   using: "composite"
-  steps: 
+  steps:
     - shell: bash
       run: |
-        python3 -m pip install setuptools
+        if [[ -e setup.py ]]; then
+          python3 -m pip install setuptools
+          setup_version="$(python3 setup.py -V)"
+        else
+          setup_version="$(python3 ${{ github.action_path }}/../read_version_cfg.py setup.cfg)"
+        fi
 
-        setup_version="$(python3 setup.py -V)"
         branch_version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
 
         if [[ "${{ inputs.ignore-dev }}" =~ true|True ]] && [ "${branch_version}" == "dev" ]; then
