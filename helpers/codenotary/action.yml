@@ -1,33 +1,16 @@
 name: 'Home Assistant helper: Codenotary'
 description: 'GitHub action helper: Codenotary'
 inputs:
-  user:
-    description: Username for Codenotary login
-    required: false
-    default: ""
-  password:
-    description: Password for Codenotary login
-    required: false
-    default: ""
-  organisation:
-    description: Organisation for Codenotary signing
-    required: false
-    default: ""
   source:
     description: Source for Codenotary signing
     required: true
-  vcn_version:
-    description: Codenotary VCN version
-    required: false
-    default: "v0.9.10"
   version:
     description: Codenotary CAS version
     required: false
-    default: "v1.0.1"
+    default: "v1.0.2"
   token:
     description: Codenotary CAS API token
-    required: false
-    default: ""
+    required: true
   signer:
     description: CAS Signer ID/Email
     required: false
@@ -40,41 +23,13 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: home-assistant/actions/helpers/vcn@master
-      with:
-        vcn_version: ${{ inputs.vcn_version }}
-
     - uses: home-assistant/actions/helpers/cas@master
       with:
         version: ${{ inputs.version }}
 
     - shell: bash
-      name: Codenotary depricated VCN
-      run: |
-        if [[ -z "${{ inputs.user }}" || -z "${{ inputs.password }}" || -z "${{ inputs.organisation }}" ]]; then
-          exit 0
-        fi
-
-        if ! vcn authenticate --silent ${{ inputs.source }}; then
-          vcn login
-          vcn notarize --public ${{ inputs.source }}
-        else
-          echo "Target is already verified."
-        fi
-      env:
-        VCN_ORG: ${{ inputs.organisation }}
-        VCN_OTP_EMPTY: true
-        VCN_USER: ${{ inputs.user }}
-        VCN_PASSWORD: ${{ inputs.password }}
-        VCN_NOTARIZATION_PASSWORD: ${{ inputs.password }}
-
-    - shell: bash
       name: Codenotary Open Source Attestation Service
       run: |
-        if [[ -z "${{ inputs.signer }}" || -z "${{ inputs.token }}" ]]; then
-          exit 0
-        fi
-
         cas_cli=()
         if [[ -n "${{ inputs.asset }}" ]]; then
           cas_cli+=("--name" "${{ inputs.asset }}")
