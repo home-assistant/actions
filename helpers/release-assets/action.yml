@@ -15,8 +15,8 @@ runs:
       if: github.event_name != 'release'
       shell: bash
       run: |
-        echo "Action can only be run for 'release' events"
-        echo "Current event_name: ${{ github.event_name }}"
+        echo "::error::Action can only be run for 'release' events"
+        echo "::error::Current event_name: ${{ github.event_name }}"
         exit 1
     - name: Get build file names
       id: file-names
@@ -30,6 +30,7 @@ runs:
       run: |
         API_REQUEST=$(curl -sS \
           -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: token ${{ inputs.github-token }}" \
           ${{ github.event.release.assets_url }})
         FOUND_ASSETS=$(echo $API_REQUEST | jq ".[] .name")
         printf "Found release assets:\n$FOUND_ASSETS\n"
@@ -39,23 +40,29 @@ runs:
         if [[ $FOUND_ASSETS == *"${{ steps.file-names.outputs.wheel }}"* ]]; then
           echo "::set-output name=wheel-found::true"
         fi
+    - name: Create upload URL
+      id: upload-url
+      shell: bash
+      run: |
+        URL=$(echo "${{ github.event.release.upload_url }}" | sed "s/{.*}$//")
+        echo "::set-output name=url::$URL"
     - name: Upload release asset (sdist)
       if: ${{ !steps.existing-assets.outputs.sdist-found }}
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ inputs.github-token }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ${{ inputs.folder }}${{ steps.file-names.outputs.sdist }}
-        asset_name: ${{ steps.file-names.outputs.sdist }}
-        asset_content_type: application/gzip
+      shell: bash
+      run: |
+        curl -sS -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: token ${{ inputs.github-token }}" \
+          -H "Content-Type: application/gzip" \
+          --data-binary @${{ inputs.folder }}${{ steps.file-names.outputs.sdist }} \
+          ${{ steps.upload-url.outputs.url }}?name=${{ steps.file-names.outputs.sdist }}
     - name: Upload release asset (wheel)
       if: ${{ !steps.existing-assets.outputs.wheel-found }}
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ inputs.github-token }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ${{ inputs.folder}}${{ steps.file-names.outputs.wheel }}
-        asset_name: ${{ steps.file-names.outputs.wheel }}
-        asset_content_type: application/zip
+      shell: bash
+      run: |
+        curl -sS -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: token ${{ inputs.github-token }}" \
+          -H "Content-Type: application/zip" \
+          --data-binary @${{ inputs.folder }}${{ steps.file-names.outputs.wheel }} \
+          ${{ steps.upload-url.outputs.url }}?name=${{ steps.file-names.outputs.wheel }}
