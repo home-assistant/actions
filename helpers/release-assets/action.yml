@@ -1,61 +1,43 @@
 name: 'Home Assistant helper: release-assets'
 description: 'GitHub action helper: release-assets'
 inputs:
-  github-token:
+  github_token:
     description: GITHUB_TOKEN with 'contents' write permission
     required: true
-  folder:
-    description: Folder for distribution packages
+  paths:
+    description: Comma-separated list of files and / or folders
+    required: true
+  file_map:
+    description: |
+      Filter and map file names to content types. E.g.
+      "*.whl=application/zip, *.tar.gz=application/gzip"
+    required: true
+  delete_existing_assets:
+    description: Delete existing assets before upload
     required: false
-    default: "dist/"
+    default: true
+    type: boolean
+
 runs:
-  using: "composite"
+  using: composite
   steps:
     - name: Fail if not release event
       if: github.event_name != 'release'
       shell: bash
       run: |
-        echo "Action can only be run for 'release' events"
-        echo "Current event_name: ${{ github.event_name }}"
+        echo "::error::Action can only be run for 'release' events"
+        echo "::error::Current event_name: '${{ github.event_name }}'"
         exit 1
-    - name: Get build file names
-      id: file-names
+    - name: Run upload script
       shell: bash
       run: |
-        echo "::set-output name=sdist::$(ls ${{ inputs.folder }} | grep '.*.tar.gz' | tail -n 1)"
-        echo "::set-output name=wheel::$(ls ${{ inputs.folder }} | grep '.*.whl' | tail -n 1)"
-    - name: Check for existing assets
-      id: existing-assets
-      shell: bash
-      run: |
-        API_REQUEST=$(curl -sS \
-          -H "Accept: application/vnd.github.v3+json" \
-          ${{ github.event.release.assets_url }})
-        FOUND_ASSETS=$(echo $API_REQUEST | jq ".[] .name")
-        printf "Found release assets:\n$FOUND_ASSETS\n"
-        if [[ $FOUND_ASSETS == *"${{ steps.file-names.outputs.sdist }}"* ]]; then
-          echo "::set-output name=sdist-found::true"
-        fi
-        if [[ $FOUND_ASSETS == *"${{ steps.file-names.outputs.wheel }}"* ]]; then
-          echo "::set-output name=wheel-found::true"
-        fi
-    - name: Upload release asset (sdist)
-      if: ${{ !steps.existing-assets.outputs.sdist-found }}
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ inputs.github-token }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ${{ inputs.folder }}${{ steps.file-names.outputs.sdist }}
-        asset_name: ${{ steps.file-names.outputs.sdist }}
-        asset_content_type: application/gzip
-    - name: Upload release asset (wheel)
-      if: ${{ !steps.existing-assets.outputs.wheel-found }}
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ inputs.github-token }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ${{ inputs.folder}}${{ steps.file-names.outputs.wheel }}
-        asset_name: ${{ steps.file-names.outputs.wheel }}
-        asset_content_type: application/zip
+        echo "::group::Upload assets"
+        CONTEXT=$(echo '${{ toJSON( github.event.release ) }}' | jq -c 'del(.author)')
+
+        python3 ${{ github.action_path }}/upload_assets.py \
+          --token "${{ inputs.github_token }}" \
+          --release_ctx "$CONTEXT" \
+          --file_map "${{ inputs.file_map }}" \
+          --delete_existing_assets "${{ inputs.delete_existing_assets }}" \
+          --paths "${{ inputs.paths }}"
+        echo "::endgroup::"
