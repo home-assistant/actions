@@ -9,18 +9,18 @@ inputs:
     description: Skip check if the branch is 'master'
     required: false
     default: false
+  metadata-file:
+    description: Name of metadata file, 'setup.cfg' or 'pyproject.toml'
+    required: false
+    default: 'setup.cfg'
 runs:
   using: "composite"
   steps:
     - shell: bash
+      env:
+        PYTHONPATH: ${{ github.action_path }}/../../vendor/
       run: |
-        if [[ -e setup.py ]]; then
-          python3 -m pip install setuptools
-          setup_version="$(python3 setup.py -V)"
-        else
-          setup_version="$(python3 ${{ github.action_path }}/../read_version_cfg.py setup.cfg)"
-        fi
-
+        setup_version="$(python3 ${{ github.action_path }}/../read_version.py "${{ inputs.metadata-file }}")"
         branch_version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
 
         if [[ "${{ inputs.ignore-dev }}" =~ true|True ]] && [ "${branch_version}" == "dev" ]; then
