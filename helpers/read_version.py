@@ -12,28 +12,30 @@ else:
 
 def main() -> int:
     """Read version from pyproject.toml. Fallback to setup.cfg."""
+    version: str | None = None
 
     if (path_pyproject := Path("pyproject.toml")).is_file():
         with open(path_pyproject, "rb") as fp:
             data = tomllib.load(fp)
 
         try:
-            print(data["project"]["version"])
-            return 0
+            version = data["project"]["version"]
         except KeyError:
             pass
 
-    if (path_setup_cfg := Path("setup.cfg")).is_file():
+    if version is None and (path_setup_cfg := Path("setup.cfg")).is_file():
         parser = configparser.ConfigParser()
         parser.read(path_setup_cfg)
 
         try:
-            print(parser["metadata"]["version"])
-            return 0
+           version = parser["metadata"]["version"]
         except KeyError:
             pass
 
-    return 1
+    if version is None:
+       return 1
+    print(version)
+    return 0
 
 
 if __name__ == "__main__":
