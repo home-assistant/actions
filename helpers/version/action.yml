@@ -48,10 +48,10 @@ runs:
           version="${{ github.sha }}"
 
         elif [[ "${version}" == "dev" && "${{ inputs.type }}" == "core" ]]; then
-          python3 -m pip install packaging
+          python3 -m pip install packaging tomli
           python3 -m pip install .
           python3 script/version_bump.py nightly
-          version="$(python3 ${{ github.action_path }}/../read_version_cfg.py setup.cfg)"
+          version="$(python3 ${{ github.action_path }}/../read_version.py)"
         fi
 
         if [[ ! -z "${{ github.event.inputs.stable }}" ]]; then

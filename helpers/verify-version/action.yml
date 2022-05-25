@@ -14,13 +14,8 @@ runs:
   steps:
     - shell: bash
       run: |
-        if [[ -e setup.py ]]; then
-          python3 -m pip install setuptools
-          setup_version="$(python3 setup.py -V)"
-        else
-          setup_version="$(python3 ${{ github.action_path }}/../read_version_cfg.py setup.cfg)"
-        fi
-
+        pip install tomli
+        setup_version="$(python3 ${{ github.action_path }}/../read_version.py)"
         branch_version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
 
         if [[ "${{ inputs.ignore-dev }}" =~ true|True ]] && [ "${branch_version}" == "dev" ]; then
