@@ -30,8 +30,6 @@ runs:
 
     - shell: bash
       id: version
-      env:
-        PYTHONPATH: ${{ github.action_path }}/../../vendor/
       run: |
         version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
 
@@ -50,7 +48,7 @@ runs:
           version="${{ github.sha }}"
 
         elif [[ "${version}" == "dev" && "${{ inputs.type }}" == "core" ]]; then
-          python3 -m pip install packaging
+          python3 -m pip install packaging tomli
           python3 -m pip install .
           python3 script/version_bump.py nightly
           version="$(python3 ${{ github.action_path }}/../read_version.py)"

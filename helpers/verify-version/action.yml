@@ -13,9 +13,8 @@ runs:
   using: "composite"
   steps:
     - shell: bash
-      env:
-        PYTHONPATH: ${{ github.action_path }}/../../vendor/
       run: |
+        pip install tomli
         setup_version="$(python3 ${{ github.action_path }}/../read_version.py)"
         branch_version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
 
