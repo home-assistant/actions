@@ -51,6 +51,6 @@ runs:
         echo "Image: $image"
         echo "Version: $version"
 
-        echo "::set-output name=architectures::$archs"
-        echo "::set-output name=image::$image"
-        echo "::set-output name=version::$version"
+        echo "architectures=$archs" >> "$GITHUB_OUTPUT"
+        echo "image=$image" >> "$GITHUB_OUTPUT"
+        echo "version=$version" >> "$GITHUB_OUTPUT"

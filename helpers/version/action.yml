@@ -62,8 +62,8 @@ runs:
           stable="false"
         fi
 
-        echo "::set-output name=stable::$stable"
-        echo "::set-output name=version::$version"
+        echo "stable=$stable" >> "$GITHUB_OUTPUT"
+        echo "version=$version" >> "$GITHUB_OUTPUT"
 
     - shell: bash
       run: |
@@ -75,22 +75,22 @@ runs:
       id: channel
       run: |
         if [[ ! -z "${{ github.event.inputs.channel }}" ]]; then
-          echo "::set-output name=channel::${{ github.event.inputs.channel }}"
+          echo "channel=${{ github.event.inputs.channel }}" >> "$GITHUB_OUTPUT"
 
         elif [[ "${{ inputs.type }}" =~ (plugin|supervisor) ]]; then
           if [[ "${{ steps.version.outputs.stable }}" == "true" ]]; then
-            echo "::set-output name=channel::beta"
+            echo "channel=beta" >> "$GITHUB_OUTPUT"
           else
-            echo "::set-output name=channel::dev"
+            echo "channel=dev" >> "$GITHUB_OUTPUT"
           fi
 
         elif [[ "${{ inputs.type }}" == "core" ]]; then
           if [[ "${{ steps.version.outputs.version }}" =~ dev ]]; then
-            echo "::set-output name=channel::dev"
+            echo "channel=dev" >> "$GITHUB_OUTPUT"
           elif [[ "${{ steps.version.outputs.version }}" =~ b ]]; then
-            echo "::set-output name=channel::beta"
+            echo "channel=beta" >> "$GITHUB_OUTPUT"
           else
-            echo "::set-output name=channel::stable"
+            echo "channel=stable" >> "$GITHUB_OUTPUT"
           fi
         fi
 
@@ -98,21 +98,21 @@ runs:
       id: publish
       run: |
         if [[ ! -z "${{ github.event.inputs.publish }}" ]]; then
-            echo "::set-output name=publish::${{ github.event.inputs.publish }}"
+            echo "publish=${{ github.event.inputs.publish }}" >> "$GITHUB_OUTPUT"
 
         elif [[ "${{ inputs.type }}" =~ (plugin|supervisor) ]]; then
           if [[ ! -z "${{ github.head_ref }}" ]]; then
-            echo "::set-output name=publish::false"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
           elif [[ "${{ github.event_name }}" =~ (release|push) ]]; then
-            echo "::set-output name=publish::true"
+            echo "publish=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::set-output name=publish::false"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
           fi
 
         elif [[ "${{ inputs.type }}" == "core" ]]; then
           if [[ "${{ github.event_name }}" == "release" ]]; then
-            echo "::set-output name=publish::true"
+            echo "publish=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::set-output name=publish::false"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
           fi
         fi
