@@ -68,7 +68,7 @@ runs:
     - shell: bash
       run: |
         if [[ "${{ inputs.type }}" == "supervisor" ]]; then
-          sed -i "s/SUPERVISOR_VERSION .*/SUPERVISOR_VERSION = \"${{ steps.version.outputs.version }}\"/g" supervisor/const.py
+          sed -i "s/^SUPERVISOR_VERSION .*/SUPERVISOR_VERSION = \"${{ steps.version.outputs.version }}\"/g" supervisor/const.py
         fi
 
     - shell: bash
