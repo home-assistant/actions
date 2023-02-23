@@ -1,8 +1,8 @@
 {
     "domain": "dummy-integration",
     "name": "dummy",
-    "documentation": "https://github.com/home-assistant/actions",
-    "version": "1.0.0",
     "codeowners": ["@octocat"],
-    "iot_class": "calculated"
+    "documentation": "https://github.com/home-assistant/actions",
+    "iot_class": "calculated",
+    "version": "1.0.0"
 }
