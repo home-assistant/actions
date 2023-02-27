@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:beta
+FROM ghcr.io/home-assistant/home-assistant:beta
 
 COPY entrypoint.sh /entrypoint.sh
 COPY requirements.txt .
