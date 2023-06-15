@@ -17,8 +17,16 @@ on:
         default: 7
         required: false
         type: number
-
-  workflow_dispatch:
+      exempt-issue-labels:
+        description: "Labels on issues exempted from stale"
+        default: "pinned,no-stale,help-wanted,rfc,security"
+        required: false
+        type: string
+      exempt-pr-labels:
+        description: "Labels on PRs exempted from stale"
+        default: "pinned,no-stale,rfc,security"
+        required: false
+        type: string
 
 jobs:
   stale:
@@ -36,7 +44,7 @@ jobs:
           days-before-close: ${{ inputs.days-before-close }}
           remove-stale-when-updated: true
           stale-issue-label: "stale"
-          exempt-issue-labels: "pinned,no-stale,help-wanted,rfc,security"
+          exempt-issue-labels: ${{ inputs.exempt-issue-labels }}
           stale-issue-message: >
             There hasn't been any activity on this issue recently, so we
             clean up some of the older and inactive issues.
@@ -48,7 +56,7 @@ jobs:
             This issue has now been marked as stale and will be closed if no
             further activity occurs. Thank you for your contributions.
           stale-pr-label: "stale"
-          exempt-pr-labels: "pinned,no-stale,rfc,security"
+          exempt-pr-labels: ${{ inputs.exempt-pr-labels }}
           stale-pr-message: >
             There hasn't been any activity on this pull request recently. This
             pull request has been automatically marked as stale because of that
