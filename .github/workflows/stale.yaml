@@ -14,7 +14,7 @@ on:
         type: number
       days-before-close:
         description: "Idle number of days before closing stale issues/PRs"
-        default: 30
+        default: 7
         required: false
         type: number
 
