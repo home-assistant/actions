@@ -25,7 +25,6 @@ jobs:
     name: 🧹 Clean up stale issues and PRs
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # only for delete-branch option
       issues: write
       pull-requests: write
     steps:
