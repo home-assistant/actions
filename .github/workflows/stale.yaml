@@ -3,8 +3,6 @@ name: Stale
 
 # yamllint disable-line rule:truthy
 on:
-  schedule:
-    - cron: "0 6 * * *"
   workflow_call:
     inputs:
       days-before-stale:
