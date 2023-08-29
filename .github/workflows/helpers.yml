@@ -51,28 +51,28 @@ jobs:
       - name: Validate version output
         run: |
           echo "${{ steps.version.outputs.version }}";
-          if [[ '${{ steps.version.outputs.version }}' != '""' ]]; then
+          if [[ '${{ steps.version.outputs.version }}' == '""' ]]; then
             exit 1
           fi
 
       - name: Validate stable output
         run: |
           echo "${{ steps.version.outputs.stable }}";
-          if [[ '${{ steps.version.outputs.stable }}' == '"false"' ]]; then
+          if [[ '${{ steps.version.outputs.stable }}' == '"true"' ]]; then
             exit 1
           fi
 
       - name: Validate channel output
         run: |
           echo "${{ steps.version.outputs.channel }}";
-          if [[ '${{ steps.version.outputs.channel }}' == '""' ]]; then
+          if [[ '${{ steps.version.outputs.channel }}' != '""' ]]; then
             exit 1
           fi
 
       - name: Validate publish output
         run: |
           echo "${{ steps.version.outputs.publish }}";
-          if [[ '${{ steps.version.outputs.publish }}' == '"false"' ]]; then
+          if [[ '${{ steps.version.outputs.publish }}' == '"true"' ]]; then
             exit 1
           fi
 
