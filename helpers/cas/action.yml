@@ -10,11 +10,16 @@ runs:
   using: "composite"
   steps:
     - shell: bash
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        INPUTS_VERSION: ${{ inputs.version }}
       run: |
-        mkdir -p "${{ github.action_path }}/bin"
-        curl -Lo "${{ github.action_path }}/bin/cas" https://github.com/codenotary/cas/releases/download/${{ inputs.version }}/cas-${{ inputs.version }}-linux-amd64-static
-        chmod a+x "${{ github.action_path }}/bin/cas"
-        echo "${{ github.action_path }}/bin" >> "$GITHUB_PATH"
+        mkdir -p "$ACTION_PATH/bin"
+        curl -Lo "$ACTION_PATH/bin/cas" https://github.com/codenotary/cas/releases/download/$INPUTS_VERSION/cas-$INPUTS_VERSION-linux-amd64-static
+        chmod a+x "$ACTION_PATH/bin/cas"
+        echo "$ACTION_PATH/bin" >> "$GITHUB_PATH"
     - shell: bash
+      env:
+        ACTION_PATH: ${{ github.action_path }}
       run: |
-        cp "${{ github.action_path }}/cas-trusted-signing-pub-key" ~/.cas-trusted-signing-pub-key
+        cp "$ACTION_PATH/cas-trusted-signing-pub-key" ~/.cas-trusted-signing-pub-key
