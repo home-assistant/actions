@@ -65,7 +65,7 @@ jobs:
       - name: Validate channel output
         run: |
           echo "${{ steps.version.outputs.channel }}";
-          if [[ '${{ steps.version.outputs.channel }}' != '""' ]]; then
+          if [[ '${{ steps.version.outputs.channel }}' != '' ]]; then
             exit 1
           fi
 

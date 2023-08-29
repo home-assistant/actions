@@ -22,21 +22,29 @@ runs:
   using: "composite"
   steps:
     - shell: bash
+      env:
+        INPUTS_TYPE: ${{ inputs.type }}
       run: |
-        if [[ -z "${{ inputs.type }}" ]];then
+        if [[ -z "$INPUTS_TYPE" ]];then
           echo "::error::Missing required key 'type' input!"
           exit 1
         fi
 
     - shell: bash
       id: version
+      env:
+        GITHUB_EVENT_INPUTS_VERSION: ${{ github.event.inputs.version }}
+        GITHUB_EVENT_INPUTS_STABLE: ${{ github.event.inputs.stable }}
+        INPUTS_TYPE: ${{ inputs.type }}
+        EVENT_NAME: ${{ github.event_name }}
+        REF: ${{ github.ref }}
       run: |
-        version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
+        version=$(echo "$REF" | awk -F"/" '{print $NF}' )
 
-        if [[ ! -z "${{ github.event.inputs.version }}" ]]; then
-          version="${{ github.event.inputs.version }}"
+        if [[ ! -z "$GITHUB_EVENT_INPUTS_VERSION" ]]; then
+          version="$GITHUB_EVENT_INPUTS_VERSION"
 
-        elif [[ "${version}" =~ (master|main) && "${{ inputs.type }}" =~ (supervisor|plugin|generic) ]]; then
+        elif [[ "${version}" =~ (master|main) && "$INPUTS_TYPE" =~ (supervisor|plugin|generic) ]]; then
           today="$(date --utc '+%Y-%m-%d')"
           midnight_timestamp="$(date --utc +%s --date=$today)"
           calver_date="$(date --utc --date=$today '+%Y.%m')"
@@ -50,19 +58,19 @@ runs:
           calver_dev="$(date --utc --date=$today '+.dev%d')$(printf "%02d" ${commit_count})"
           version="${base_ver}${calver_dev}"
 
-        elif [[ "${version}" == "merge" && "${{ inputs.type }}" =~ (supervisor|plugin|generic) ]]; then
+        elif [[ "${version}" == "merge" && "$INPUTS_TYPE" =~ (supervisor|plugin|generic) ]]; then
           version="${{ github.sha }}"
 
-        elif [[ "${version}" == "dev" && "${{ inputs.type }}" == "core" ]]; then
+        elif [[ "${version}" == "dev" && "$INPUTS_TYPE" == "core" ]]; then
           python3 -m pip install packaging tomli
           python3 -m pip install .
           python3 script/version_bump.py nightly
           version="$(python3 ${{ github.action_path }}/../read_version.py)"
         fi
 
-        if [[ ! -z "${{ github.event.inputs.stable }}" ]]; then
-          stable="${{ github.event.inputs.stable }}"
-        elif [[ "${{ github.event_name }}" == "release" ]]; then
+        if [[ ! -z "$GITHUB_EVENT_INPUTS_STABLE" ]]; then
+          stable="$GITHUB_EVENT_INPUTS_STABLE"
+        elif [[ "$EVENT_NAME" == "release" ]]; then
           stable="true"
         else
           stable="false"
@@ -72,25 +80,30 @@ runs:
         echo "version=$version" >> "$GITHUB_OUTPUT"
 
     - shell: bash
+      env:
+        INPUTS_TYPE: ${{ inputs.type }}
       run: |
-        if [[ "${{ inputs.type }}" == "supervisor" ]]; then
+        if [[ "$INPUTS_TYPE" == "supervisor" ]]; then
           sed -i "s/^SUPERVISOR_VERSION =.*/SUPERVISOR_VERSION = \"${{ steps.version.outputs.version }}\"/g" supervisor/const.py
         fi
 
     - shell: bash
       id: channel
+      env:
+        INPUTS_TYPE: ${{ inputs.type }}
+        GITHUB_EVENT_INPUTS_CHANNEL: ${{ github.event.inputs.channel }}
       run: |
-        if [[ ! -z "${{ github.event.inputs.channel }}" ]]; then
-          echo "channel=${{ github.event.inputs.channel }}" >> "$GITHUB_OUTPUT"
+        if [[ ! -z "$GITHUB_EVENT_INPUTS_CHANNEL" ]]; then
+          echo "channel=$GITHUB_EVENT_INPUTS_CHANNEL" >> "$GITHUB_OUTPUT"
 
-        elif [[ "${{ inputs.type }}" =~ (plugin|supervisor) ]]; then
+        elif [[ "$INPUTS_TYPE" =~ (plugin|supervisor) ]]; then
           if [[ "${{ steps.version.outputs.stable }}" == "true" ]]; then
             echo "channel=beta" >> "$GITHUB_OUTPUT"
           else
             echo "channel=dev" >> "$GITHUB_OUTPUT"
           fi
 
-        elif [[ "${{ inputs.type }}" == "core" ]]; then
+        elif [[ "$INPUTS_TYPE" == "core" ]]; then
           if [[ "${{ steps.version.outputs.version }}" =~ dev ]]; then
             echo "channel=dev" >> "$GITHUB_OUTPUT"
           elif [[ "${{ steps.version.outputs.version }}" =~ b ]]; then
@@ -102,21 +115,26 @@ runs:
 
     - shell: bash
       id: publish
+      env:
+        INPUTS_TYPE: ${{ inputs.type }}
+        GITHUB_EVENT_INPUTS_PUBLISH: ${{ github.event.inputs.publish }}
+        EVENT_NAME: ${{ github.event_name }}
+        HEAD_REF: ${{ github.head_ref }}
       run: |
-        if [[ ! -z "${{ github.event.inputs.publish }}" ]]; then
-            echo "publish=${{ github.event.inputs.publish }}" >> "$GITHUB_OUTPUT"
+        if [[ ! -z "$GITHUB_EVENT_INPUTS_PUBLISH" ]]; then
+            echo "publish=$GITHUB_EVENT_INPUTS_PUBLISH" >> "$GITHUB_OUTPUT"
 
-        elif [[ "${{ inputs.type }}" =~ (plugin|supervisor) ]]; then
-          if [[ ! -z "${{ github.head_ref }}" ]]; then
+        elif [[ "$INPUTS_TYPE" =~ (plugin|supervisor) ]]; then
+          if [[ ! -z "$HEAD_REF" ]]; then
             echo "publish=false" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ github.event_name }}" =~ (release|push) ]]; then
+          elif [[ "$EVENT_NAME" =~ (release|push) ]]; then
             echo "publish=true" >> "$GITHUB_OUTPUT"
           else
             echo "publish=false" >> "$GITHUB_OUTPUT"
           fi
 
-        elif [[ "${{ inputs.type }}" == "core" ]]; then
-          if [[ "${{ github.event_name }}" == "release" ]]; then
+        elif [[ "$INPUTS_TYPE" == "core" ]]; then
+          if [[ "$EVENT_NAME" == "release" ]]; then
             echo "publish=true" >> "$GITHUB_OUTPUT"
           else
             echo "publish=false" >> "$GITHUB_OUTPUT"
