@@ -18,33 +18,43 @@ runs:
   steps: 
     - shell: bash
       id: validate-input
+      env:
+        INPUTS_KEY: ${{ inputs.key }}
+        INPUTS_VERSION: ${{ inputs.version }}
+        INPUTS_KEY_DESCRIPTION: ${{ inputs.key-description }}
       run: |
-        if [[ -z "${{ inputs.key }}" ]];then
+        if [[ -z "$INPUTS_KEY" ]];then
           echo "::error::Missing required key 'key' input!"
           exit 1
-        elif [[ -z "${{ inputs.version }}" ]];then
+        elif [[ -z "$INPUTS_VERSION" ]];then
           echo "::error::Missing required key 'version' input!"
           exit 1
         fi
-        if [[ -z "${{ inputs.key-description }}" ]];then
-          echo "key-description=${{ inputs.key }}" >> "$GITHUB_OUTPUT"
+        if [[ -z "$INPUTS_KEY_DESCRIPTION" ]];then
+          echo "key-description=$INPUTS_KEY" >> "$GITHUB_OUTPUT"
         else
-          echo "key-description=${{ inputs.key-description }}" >> "$GITHUB_OUTPUT"
+          echo "key-description=$INPUTS_KEY_DESCRIPTION" >> "$GITHUB_OUTPUT"
         fi
 
     - shell: bash
       run: git clone --depth 1 https://github.com/home-assistant/version.git /tmp/version
 
     - shell: bash
+      env:
+        INPUTS_KEY: ${{ inputs.key }}
+        INPUTS_VERSION: ${{ inputs.version }}
+        INPUTS_CHANNEL: ${{ inputs.channel }}
       run: |
         temp=$(mktemp)
-        jq '.${{ inputs.key }} |= "${{ inputs.version }}"' "/tmp/version/${{ inputs.channel }}.json" > "${temp}"
-        mv "${temp}" "/tmp/version/${{ inputs.channel }}.json"
+        jq ".$INPUTS_KEY |= \"$INPUTS_VERSION\"" "/tmp/version/$INPUTS_CHANNEL.json" > "${temp}"
+        mv "${temp}" "/tmp/version/$INPUTS_CHANNEL.json"
 
     - shell: bash
+      env:
+        INPUTS_VERSION: ${{ inputs.version }}
       run: |
         cd /tmp/version
-        git commit -am "Bump ${{ steps.validate-input.outputs.key-description }} to ${{ inputs.version }}"
+        git commit -am "Bump ${{ steps.validate-input.outputs.key-description }} to $INPUTS_VERSION"
         git push
 
     - shell: bash
