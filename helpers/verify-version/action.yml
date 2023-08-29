@@ -13,14 +13,19 @@ runs:
   using: "composite"
   steps:
     - shell: bash
+      env:
+        INPUTS_IGNORE_DEV: ${{ inputs.ignore-dev }}
+        INPUTS_IGNORE_MASTER: ${{ inputs.ignore-master }}
+        ACTION_PATH: ${{ github.action_path }}
+        REF: ${{ github.ref }}
       run: |
         pip install tomli
-        setup_version="$(python3 ${{ github.action_path }}/../read_version.py)"
-        branch_version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
+        setup_version="$(python3 $ACTION_PATH/../read_version.py)"
+        branch_version=$(echo "$REF" | awk -F"/" '{print $NF}' )
 
-        if [[ "${{ inputs.ignore-dev }}" =~ true|True ]] && [ "${branch_version}" == "dev" ]; then
+        if [[ "$INPUTS_IGNORE_DEV" =~ true|True ]] && [ "${branch_version}" == "dev" ]; then
           exit 0
-        elif [[ "${{ inputs.ignore-master }}" =~ true|True ]] && [ "${branch_version}" == "master" ]; then
+        elif [[ "$INPUTS_IGNORE_MASTER" =~ true|True ]] && [ "${branch_version}" == "master" ]; then
           exit 0
         elif [ "${setup_version}" != "${branch_version}" ]; then
           echo "Version of tag ${branch_version} don't match with ${setup_version}!"
