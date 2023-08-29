@@ -20,25 +20,32 @@ runs:
   using: "composite"
   steps: 
     - shell: bash
+      env:
+        INPUTS_GITHUB_TOKEN: ${{ inputs.github-token }}
+        INPUTS_JOB: ${{ inputs.job }}
+        INPUTS_RETRY_LIMIT: ${{ inputs.retry-limit }}
+        INPUTS_TIMEOUT: ${{ inputs.timeout }}
+        REPOSITORY: ${{github.repository}}
+        SHA: ${{github.sha}}
       run: |
         retries=1
         conclusion="";
         status="";
 
         while true; do
-          result=$(curl -sSL -f -H "Authorization: token ${{inputs.github-token}}" https://api.github.com/repos/${{github.repository}}/commits/${{github.sha}}/check-runs | jq --arg test ${{inputs.job}} '[.check_runs | .[] |select(.name | contains($test))][0]')
+          result=$(curl -sSL -f -H "Authorization: token $INPUTS_GITHUB_TOKEN" "https://api.github.com/repos/$REPOSITORY/commits/$SHA/check-runs" | jq --arg test $INPUTS_JOB '[.check_runs | .[] |select(.name | contains($test))][0]')
           conclusion=$(echo $result | jq -r .conclusion)
           status=$(echo $result | jq -r .status)
           echo
-          echo "Try: $retries/${{inputs.retry-limit}}"
+          echo "Try: $retries/$INPUTS_RETRY_LIMIT"
           echo "Status: $status"
           echo "Conclusion: $conclusion"
 
-          if [ "$status" == "completed" ] || [ "$retries" == "${{inputs.retry-limit}}" ]; then
+          if [ "$status" == "completed" ] || [ "$retries" == "$INPUTS_RETRY_LIMIT" ]; then
             break
           else
-            echo "Sleeping for ${{inputs.timeout}}s"
-            sleep ${{inputs.timeout}}
+            echo "Sleeping for $INPUTS_TIMEOUTs"
+            sleep $INPUTS_TIMEOUT
             retries=$(( $retries + 1 ))
           fi
         done
