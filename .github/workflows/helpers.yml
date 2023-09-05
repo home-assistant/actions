@@ -37,6 +37,45 @@ jobs:
           which cas
           [ -f ~/.cas-trusted-signing-pub-key ]
 
+  version:
+    runs-on: ubuntu-latest
+    name: version
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+      
+      - name: Run action
+        id: version
+        uses: ./helpers/version
+
+      - name: Validate version output
+        run: |
+          echo "${{ steps.version.outputs.version }}";
+          if [[ '${{ steps.version.outputs.version }}' == '""' ]]; then
+            exit 1
+          fi
+
+      - name: Validate stable output
+        run: |
+          echo "${{ steps.version.outputs.stable }}";
+          if [[ '${{ steps.version.outputs.stable }}' == '"true"' ]]; then
+            exit 1
+          fi
+
+      - name: Validate channel output
+        run: |
+          echo "${{ steps.version.outputs.channel }}";
+          if [[ '${{ steps.version.outputs.channel }}' != '' ]]; then
+            exit 1
+          fi
+
+      - name: Validate publish output
+        run: |
+          echo "${{ steps.version.outputs.publish }}";
+          if [[ '${{ steps.version.outputs.publish }}' == '"true"' ]]; then
+            exit 1
+          fi
+
   info:
     runs-on: ubuntu-latest
     name: info

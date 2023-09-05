@@ -29,23 +29,28 @@ runs:
 
     - shell: bash
       name: Codenotary Open Source Attestation Service
+      env:
+        INPUTS_ASSET: ${{ inputs.asset }}
+        INPUTS_SOURCE: ${{ inputs.source }}
+        INPUTS_SIGNER: ${{ inputs.signer }}
+        INPUTS_TOKEN: ${{ inputs.token }}
       run: |
         cas_cli=()
-        if [[ -n "${{ inputs.asset }}" ]]; then
-          cas_cli+=("--name" "${{ inputs.asset }}")
+        if [[ -n "$INPUTS_ASSET" ]]; then
+          cas_cli+=("--name" "$INPUTS_ASSET")
         fi
         
         input_source=()
-        if [[ "${{ inputs.source }}" =~ ^hash ]]; then
-          raw_input="${{ inputs.source }}"
+        if [[ "$INPUTS_SOURCE" =~ ^hash ]]; then
+          raw_input="$INPUTS_SOURCE"
           input_source+=("--hash" "${raw_input#*//}")
         else
-          input_source+=("${{ inputs.source }}")
+          input_source+=("$INPUTS_SOURCE")
         fi
 
-        if ! cas authenticate --silent --signerID ${{ inputs.signer }} "${input_source[@]}"; then
-          CAS_API_KEY="${{ inputs.token }}" cas login
-          CAS_API_KEY="${{ inputs.token }}" cas notarize --ci-attr "${cas_cli[@]}" "${input_source[@]}"
+        if ! cas authenticate --silent --signerID "$INPUTS_SIGNER" "${input_source[@]}"; then
+          CAS_API_KEY="$INPUTS_TOKEN" cas login
+          CAS_API_KEY="$INPUTS_TOKEN" cas notarize --ci-attr "${cas_cli[@]}" "${input_source[@]}"
         else
           echo "Target is already verified."
         fi

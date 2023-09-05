@@ -9,10 +9,12 @@ runs:
   using: "composite"
   steps: 
     - shell: bash
+      env:
+        INPUTS_PATH: ${{ inputs.path }}
+        WORKSPACE: ${{ github.workspace }}
       run: |
         declare -a jsonfiles
-        basepath=${{ github.workspace }}/${{ inputs.path }}
-        for jsonfile in $(find "$basepath" -type f -name "*.json"); do
+        for jsonfile in $(find "$WORKSPACE/$INPUTS_PATH" -type f -name "*.json"); do
           echo "Linting: $jsonfile";
           cat "$jsonfile" | jq -e '.' >/dev/null;
         done;

@@ -13,11 +13,15 @@ runs:
   using: "composite"
   steps: 
     - shell: bash
+      env:
+        INPUTS_NAME: ${{ inputs.name }}
+        INPUTS_EMAIL: ${{ inputs.email }}
+        INPUTS_TOKEN: ${{ inputs.token }}
       run: |
-        git config --global user.name "${{ inputs.name }}"
-        git config --global user.email "${{ inputs.email }}"
+        git config --global user.name "$INPUTS_NAME"
+        git config --global user.email "$INPUTS_EMAIL"
 
-        if [[ ! -z "${{ inputs.token }}" ]]; then
+        if [[ ! -z "$INPUTS_TOKEN" ]]; then
           git config --global credential.helper store
-          echo "https://${{ inputs.token }}:x-oauth-basic@github.com" > $HOME/.git-credentials
+          echo "https://$INPUTS_TOKEN:x-oauth-basic@github.com" > $HOME/.git-credentials
         fi
