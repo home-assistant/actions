@@ -13,5 +13,6 @@ if [[ ${#integrations[@]} -eq 0 ]]; then
 fi
 
 cd /usr/src/homeassistant
-exec git init && pre-commit install
+git init
+pre-commit install
 exec python3 -m script.hassfest --action validate "${integrations[@]}"
