@@ -17,7 +17,7 @@ runs:
         INPUTS_IGNORE_DEV: ${{ inputs.ignore-dev }}
         INPUTS_IGNORE_MASTER: ${{ inputs.ignore-master }}
         ACTION_PATH: ${{ github.action_path }}
-        REF: ${{ github.ref }}
+        REF: ${{ github.event_name == 'release' && github.event.release.tag_name || github.ref }}
       run: |
         pip install tomli
         setup_version="$(python3 $ACTION_PATH/../read_version.py)"
