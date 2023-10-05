@@ -37,7 +37,7 @@ runs:
         GITHUB_EVENT_INPUTS_STABLE: ${{ github.event.inputs.stable }}
         INPUTS_TYPE: ${{ inputs.type }}
         EVENT_NAME: ${{ github.event_name }}
-        REF: ${{ github.ref }}
+        REF: ${{ github.event_name == 'release' && github.event.release.tag_name || github.ref }}
       run: |
         version=$(echo "$REF" | awk -F"/" '{print $NF}' )
 
