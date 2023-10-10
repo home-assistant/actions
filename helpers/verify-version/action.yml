@@ -23,6 +23,11 @@ runs:
         setup_version="$(python3 $ACTION_PATH/../read_version.py)"
         branch_version=$(echo "$REF" | awk -F"/" '{print $NF}' )
 
+        if [[ "${branch_version}" === "" ]]; then
+          echo "::error::Verson is empty"
+          exit 1
+        fi
+
         if [[ "$INPUTS_IGNORE_DEV" =~ true|True ]] && [ "${branch_version}" == "dev" ]; then
           exit 0
         elif [[ "$INPUTS_IGNORE_MASTER" =~ true|True ]] && [ "${branch_version}" == "master" ]; then

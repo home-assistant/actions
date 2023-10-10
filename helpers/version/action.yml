@@ -41,6 +41,11 @@ runs:
       run: |
         version=$(echo "$REF" | awk -F"/" '{print $NF}' )
 
+        if [[ "${version}" === "" ]]; then
+          echo "::error::Verson is empty"
+          exit 1
+        fi
+
         if [[ ! -z "$GITHUB_EVENT_INPUTS_VERSION" ]]; then
           version="$GITHUB_EVENT_INPUTS_VERSION"
 
