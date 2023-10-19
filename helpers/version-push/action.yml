@@ -15,6 +15,10 @@ inputs:
   channel:
     default: 'dev'
     description: "Target channel."
+  create-pr:
+    default: 'false'
+    required: false
+    description: "Create pull request instead of pushing directly to the default branch."
 runs:
   using: "composite"
   steps:
@@ -54,10 +58,22 @@ runs:
     - shell: bash
       env:
         INPUTS_VERSION: ${{ inputs.version }}
+      if: ${{ inputs.create-pr != 'true' }}
       run: |
         cd /tmp/version
         git commit -am "Bump ${{ steps.validate-input.outputs.key-description }} to $INPUTS_VERSION"
         git push
+
+    - uses: peter-evans/create-pull-request@v5
+      if: ${{ inputs.create-pr == 'true' }}
+      with:
+        commit-message: "Bump ${{ steps.validate-input.outputs.key-description }} to ${{ inputs.version }}"
+        branch: "bump-${{ inputs.key }}-to-${{ inputs.version }}"
+        base: master
+        title: "Bump ${{ steps.validate-input.outputs.key-description }} to ${{ inputs.version }}"
+        body: |
+          Merging this pull request will trigger deployment of ${{ steps.validate-input.outputs.key-description }}
+          to the ${{ inputs.channel }} channel.
 
     - shell: bash
       run: rm -rf /tmp/version
