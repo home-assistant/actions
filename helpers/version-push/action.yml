@@ -11,11 +11,13 @@ inputs:
   version:
     required: true
     default: ''
+    description: "Version to bump to."
   channel:
     default: 'dev'
+    description: "Target channel."
 runs:
   using: "composite"
-  steps: 
+  steps:
     - shell: bash
       id: validate-input
       env:
