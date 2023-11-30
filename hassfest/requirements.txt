@@ -2,3 +2,4 @@ black==22.8.0
 pipdeptree==1.0.0
 stdlib-list==0.7.0
 tqdm==4.48.2
+ruff==0.1.6
