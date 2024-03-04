@@ -1,0 +1,32 @@
+name: "Home Assitant helper: Lock old issues/PRs"
+description: "Github action helper: Lock old issues/PRs"
+
+inputs:
+  issue-inactive-days:
+    description: "Number of days before locking inactive issues."
+    default: "30"
+    required: false
+  pr-inactive-days:
+    description: "Number of days before locking inactive PRs."
+    default: "1"
+    required: false
+  exclude-issue-created-before:
+    description: "Date to ignore issues older than (ISO 8601 format)."
+    required: false
+    default: ""
+  exclude-pr-created-before:
+    description: "Date to ignore PRs older than (ISO 8601 format)."
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - uses: dessant/lock-threads@v5.0.1
+      with:
+        issue-inactive-days: ${{ inputs.issue-inactive-days }}
+        exclude-issue-created-before: ${{ inputs.exclude-issue-created-before }}
+        issue-lock-reason: ""
+        pr-inactive-days: ${{ inputs.pr-inactive-days }}
+        exclude-pr-created-before: ${{ inputs.exclude-pr-created-before }}
+        pr-lock-reason: ""
