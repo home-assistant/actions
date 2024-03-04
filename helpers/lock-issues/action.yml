@@ -1,4 +1,4 @@
-name: "Home Assitant helper: Lock old issues/PRs"
+name: "Home Assistant helper: Lock old issues/PRs"
 description: "Github action helper: Lock old issues/PRs"
 
 inputs:
