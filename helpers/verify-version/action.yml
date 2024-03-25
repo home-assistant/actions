@@ -18,8 +18,10 @@ runs:
         INPUTS_IGNORE_MASTER: ${{ inputs.ignore-master }}
         ACTION_PATH: ${{ github.action_path }}
         REF: ${{ github.event_name == 'release' && github.event.release.tag_name || github.ref }}
+        UV_SYSTEM_PYTHON: "true"
       run: |
-        pip install tomli
+        pip install uv
+        uv pip install tomli
         setup_version="$(python3 $ACTION_PATH/../read_version.py)"
         branch_version=$(echo "$REF" | awk -F"/" '{print $NF}' )
 
