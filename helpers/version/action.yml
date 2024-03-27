@@ -69,7 +69,7 @@ runs:
         elif [[ "${version}" == "dev" && "$INPUTS_TYPE" == "core" ]]; then
           python3 -m pip install packaging tomli
           python3 -m pip install .
-          python3 script/version_bump.py nightly
+          python3 script/version_bump.py nigthly_datetime
           version="$(python3 ${{ github.action_path }}/../read_version.py)"
         fi
 
