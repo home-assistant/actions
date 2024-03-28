@@ -1,4 +1,4 @@
-pipdeptree==1.0.0
-stdlib-list==0.7.0
-tqdm==4.48.2
-ruff==0.1.6
+pipdeptree==2.15.1
+stdlib-list==0.10.0
+tqdm==4.66.2
+ruff==0.2.1
