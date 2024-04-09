@@ -3,8 +3,7 @@ FROM ghcr.io/home-assistant/home-assistant:beta
 COPY entrypoint.sh /entrypoint.sh
 COPY requirements.txt .
 
-RUN pip3 install uv==0.1.28
-RUN uv pip -vv install -r requirements.txt
+RUN uv pip install -r requirements.txt
 
 WORKDIR "/github/workspace"
 ENTRYPOINT ["/entrypoint.sh"]
