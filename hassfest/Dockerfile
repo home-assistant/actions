@@ -1,5 +1,7 @@
 FROM ghcr.io/home-assistant/home-assistant:beta
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 COPY entrypoint.sh /entrypoint.sh
 COPY requirements.txt .
 
