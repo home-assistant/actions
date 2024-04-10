@@ -6,7 +6,7 @@ COPY entrypoint.sh /entrypoint.sh
 COPY requirements.txt .
 
 RUN \
-    uv pip install -r requirements.txt
+    uv pip install -r requirements.txt \
     # Install requirements from core
     && curl -LJO https://raw.githubusercontent.com/home-assistant/core/rc/requirements_test.txt \
     && uv pip install $(grep -e "^pipdeptree" -e "^tqdm" requirements_test.txt) \
