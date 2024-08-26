@@ -5,12 +5,9 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 COPY entrypoint.sh /entrypoint.sh
 
 RUN \
-    curl -LJO https://raw.githubusercontent.com/home-assistant/core/rc/requirements_test.txt \
-        -LJO https://raw.githubusercontent.com/home-assistant/core/rc/requirements_test_pre_commit.txt \
-    && uv pip install stdlib-list==0.10.0 \
-        $(grep -e "^pipdeptree" -e "^tqdm" requirements_test.txt) \
-        $(grep -e "^ruff" requirements_test_pre_commit.txt) \
-    && rm requirements_test.txt requirements_test_pre_commit.txt
+    uv pip install stdlib-list==0.10.0 \
+        $(grep -e "^pipdeptree" -e "^tqdm" /usr/src/homeassistant/requirements_test.txt) \
+        $(grep -e "^ruff" /usr/src/homeassistant/requirements_test_pre_commit.txt)
 
 WORKDIR "/github/workspace"
 ENTRYPOINT ["/entrypoint.sh"]
