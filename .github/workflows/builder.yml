@@ -1,0 +1,68 @@
+name: Build images
+
+# yamllint disable-line rule:truthy
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Which core version should be used as base image
+        required: true
+
+env:
+  REGISTRY: ghcr.io
+  HASSFEST_IMAGE_NAME: ${{ github.repository }}/hassfest
+  HASSFEST_IMAGE_TAG: ${{ env.HASSFEST_IMAGE_NAME }}:latest
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker image
+        uses: docker/build-push-action@5cd11c3a4ced054e52742c5fd54dca954e0edd85 # v6.7.0
+        with:
+          context: ./hassfest
+          build-args: FROM_VERSION=${{ version }}
+          load: true
+          tags: ${{ env.HASSFEST_IMAGE_TAG }}
+
+      # todo test with core
+      - name: Checkout core repository
+        uses: actions/checkout@v4
+        with:
+          name: home-assistant/core
+          path: tmp/core
+
+      - name: Run hassfest againt core
+        run: docker run --rm -v ${{ github.workspace }}/tmp/core://github/workspace ${{ env.REGISTRY }}/${{ env.HASSFEST_IMAGE_TAG }}
+
+      - name: Push Docker image
+        id: push
+        uses: docker/build-push-action@5cd11c3a4ced054e52742c5fd54dca954e0edd85 # v6.7.0
+        with:
+          context: ./hassfest
+          build-args: FROM_VERSION=${{ version }}
+          push: true
+          tags: ${{ env.HASSFEST_IMAGE_TAG }}
+      
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@6149ea5740be74af77f260b9db67e633f6b0a9a1  # v1.4.2
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.HASSFEST_IMAGE_NAME }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+      
