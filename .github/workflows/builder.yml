@@ -47,12 +47,11 @@ jobs:
           repository: home-assistant/core
           path: tmp/core
           # checkout only the homeassistant folder as others are not needed
-          # core tests folder contains invalid integrations which would fail hassfest
           sparse-checkout: |
             homeassistant
 
       - name: Run hassfest againt core
-        run: docker run --rm -v ${{ github.workspace }}/tmp/core:/ ${{ env.HASSFEST_IMAGE_TAG }}
+        run: docker run --rm -v ${{ github.workspace }}/tmp/core/homeassistant:/homeassistant ${{ env.HASSFEST_IMAGE_TAG }}
 
       - name: Push Docker image
         id: push
