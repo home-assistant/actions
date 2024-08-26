@@ -60,7 +60,7 @@ jobs:
           tags: ${{ env.HASSFEST_IMAGE_TAG }}
       
       - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@6149ea5740be74af77f260b9db67e633f6b0a9a1  # v1.4.2
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.HASSFEST_IMAGE_NAME }}
           subject-digest: ${{ steps.push.outputs.digest }}
