@@ -52,7 +52,7 @@ jobs:
             homeassistant
 
       - name: Run hassfest againt core
-        run: docker run --rm -v ${{ github.workspace }}/tmp/core://github/workspace ${{ env.HASSFEST_IMAGE_TAG }}
+        run: docker run --rm -v ${{ github.workspace }}/tmp/core:/ ${{ env.HASSFEST_IMAGE_TAG }}
 
       - name: Push Docker image
         id: push
