@@ -1,4 +1,5 @@
-FROM ghcr.io/home-assistant/home-assistant:beta
+ARG FROM_VERSION=beta
+FROM ghcr.io/home-assistant/home-assistant:${FROM_VERSION}
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
