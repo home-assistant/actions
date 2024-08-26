@@ -10,8 +10,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  HASSFEST_IMAGE_NAME: ${{ github.repository }}/hassfest
-  HASSFEST_IMAGE_TAG: ${{ github.repository }}/hassfest:latest
+  HASSFEST_IMAGE_NAME: ghcr.io/${{ github.repository }}/hassfest
+  HASSFEST_IMAGE_TAG: ghcr.io/${{ github.repository }}/hassfest:latest
 
 jobs:
   build-and-push-image:
@@ -23,7 +23,7 @@ jobs:
       id-token: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: Log in to the Container registry
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
@@ -42,13 +42,13 @@ jobs:
 
       # todo test with core
       - name: Checkout core repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
-          name: home-assistant/core
+          repository: home-assistant/core
           path: tmp/core
 
       - name: Run hassfest againt core
-        run: docker run --rm -v ${{ github.workspace }}/tmp/core://github/workspace ${{ env.REGISTRY }}/${{ env.HASSFEST_IMAGE_TAG }}
+        run: docker run --rm -v ${{ github.workspace }}/tmp/core://github/workspace ${{ env.HASSFEST_IMAGE_TAG }}
 
       - name: Push Docker image
         id: push
@@ -62,7 +62,7 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@6149ea5740be74af77f260b9db67e633f6b0a9a1  # v1.4.2
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.HASSFEST_IMAGE_NAME }}
+          subject-name: ${{ env.HASSFEST_IMAGE_NAME }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
       
