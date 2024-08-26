@@ -11,6 +11,7 @@ on:
 env:
   REGISTRY: ghcr.io
   HASSFEST_IMAGE_NAME: ${{ github.repository }}/hassfest
+  HASSFEST_IMAGE_TAG: ${{ env.HASSFEST_IMAGE_NAME }}:latest
 
 jobs:
   build-and-push-image:
@@ -31,24 +32,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=${{ github.event.inputs.version }}
-            type=semver,pattern={{major}}.{{minor}},value=${{ github.event.inputs.version }}
-            type=raw,value=latest
-
       - name: Build Docker image
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
           context: .
           build-args: FROM_VERSION=${{ version }}
           load: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ env.HASSFEST_IMAGE_TAG }}
 
       # todo test with core
       - name: Checkout core repository
@@ -58,7 +48,7 @@ jobs:
           path: tmp/core
 
       - name: Run hassfest againt core
-        run: docker run --rm -v ${{ github.workspace }}/tmp/core://github/workspace ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+        run: docker run --rm -v ${{ github.workspace }}/tmp/core://github/workspace ${{ env.REGISTRY }}/${{ env.HASSFEST_IMAGE_TAG }}
 
       - name: Push Docker image
         id: push
@@ -67,13 +57,12 @@ jobs:
           context: .
           build-args: FROM_VERSION=${{ version }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ env.HASSFEST_IMAGE_TAG }}
       
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-name: ${{ env.REGISTRY }}/${{ env.HASSFEST_IMAGE_NAME }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
       
