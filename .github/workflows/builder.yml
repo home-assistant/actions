@@ -11,7 +11,7 @@ on:
 env:
   REGISTRY: ghcr.io
   HASSFEST_IMAGE_NAME: ${{ github.repository }}/hassfest
-  HASSFEST_IMAGE_TAG: ${{ env.HASSFEST_IMAGE_NAME }}:latest
+  HASSFEST_IMAGE_TAG: ${{ github.repository }}/hassfest:latest
 
 jobs:
   build-and-push-image:
