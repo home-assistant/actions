@@ -8,4 +8,4 @@ runs:
 
     - shell: bash
       run: |
-        docker run --rm -v ${{ github.workspace }}://github/workspace ghcr.io/homeassistant/hassfest
+        docker run --rm -v ${{ github.workspace }}://github/workspace ghcr.io/home-assistant/hassfest
