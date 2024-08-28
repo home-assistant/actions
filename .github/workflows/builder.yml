@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Which core version should be used as base image
+        description: Which core version/tag should be used as base image
         required: true
 
 env:
@@ -40,11 +40,11 @@ jobs:
           load: true
           tags: ${{ env.HASSFEST_IMAGE_TAG }}
 
-      # todo test with core
       - name: Checkout core repository
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           repository: home-assistant/core
+          ref: ${{ github.event.inputs.version }}
           path: tmp/core
           # checkout only the homeassistant folder as others are not needed
           sparse-checkout: |
