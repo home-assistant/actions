@@ -13,4 +13,4 @@ if [[ ${#integrations[@]} -eq 0 ]]; then
 fi
 
 cd /usr/src/homeassistant
-exec python3 -m script.hassfest --action validate "${integrations[@]}"
+exec python3 -m script.hassfest --action validate "${integrations[@]}" "$@"
