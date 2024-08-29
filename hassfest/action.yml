@@ -8,8 +8,4 @@ runs:
 
     - shell: bash
       run: |
-        docker build ${{ github.action_path }} -f ${{ github.action_path }}/Dockerfile -t hassfest
-
-    - shell: bash
-      run: |
-        docker run --rm -v ${{ github.workspace }}://github/workspace hassfest
+        docker run --rm -v ${{ github.workspace }}://github/workspace ghcr.io/home-assistant/hassfest
