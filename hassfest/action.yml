@@ -1,11 +1,5 @@
 name: 'Home Assistant: hassfest'
 description: 'Home Assistant: hassfest'
 runs:
-  using: "composite"
-  steps: 
-    - shell: bash
-      run: echo "::add-matcher::${{ github.action_path }}/problem-matcher.json"
-
-    - shell: bash
-      run: |
-        docker run --rm -v ${{ github.workspace }}://github/workspace ghcr.io/home-assistant/hassfest
+  using: 'docker'
+  image: 'docker://ghcr.io/home-assistant/hassfest'
