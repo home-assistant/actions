@@ -29,7 +29,7 @@ runs:
         version=""
 
         mkdir -p "$ACTION_PATH/bin"
-        wget -q -O "$ACTION_PATH/bin/yq" https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+        wget -q -O "$ACTION_PATH/bin/yq" "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_$(dpkg --print-architecture)"
         chmod a+x "$ACTION_PATH/bin/yq"
         echo "$ACTION_PATH/bin" >> "$GITHUB_PATH"
 
