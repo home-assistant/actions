@@ -32,6 +32,7 @@ runs:
         wget -q -O "$ACTION_PATH/bin/yq" "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_$(dpkg --print-architecture)"
         chmod a+x "$ACTION_PATH/bin/yq"
         echo "$ACTION_PATH/bin" >> "$GITHUB_PATH"
+        export PATH="$ACTION_PATH/bin:$PATH"
 
         for file_type in json yml yaml; do
           if [[ -f "$INPUTS_PATH/build.${file_type}" ]]; then
