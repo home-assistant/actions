@@ -12,7 +12,7 @@ jobs:
     name: hassfest
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v5.0.0
       
       - name: Test hassfest
         uses: ./hassfest
