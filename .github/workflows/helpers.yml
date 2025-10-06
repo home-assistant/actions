@@ -21,21 +21,6 @@ jobs:
         uses: ./helpers/jq
         with:
           path: test_files
- 
-  cas:
-    runs-on: ubuntu-latest
-    name: cas
-    steps:
-      - name: Check out the repository
-        uses: actions/checkout@v4
-      
-      - name: Run action
-        uses: ./helpers/cas
-
-      - name: Verify installation
-        run: |
-          which cas
-          [ -f ~/.cas-trusted-signing-pub-key ]
 
   version:
     runs-on: ubuntu-latest
