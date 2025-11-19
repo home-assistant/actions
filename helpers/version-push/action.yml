@@ -13,6 +13,10 @@ inputs:
     default: ''
   channel:
     default: 'dev'
+  exclude-list:
+    required: false
+    default: '[]'
+    description: "Exclude specific keys from being updated. Provide a JSON array of keys to exclude."
 runs:
   using: "composite"
   steps: 
@@ -44,9 +48,28 @@ runs:
         INPUTS_KEY: ${{ inputs.key }}
         INPUTS_VERSION: ${{ inputs.version }}
         INPUTS_CHANNEL: ${{ inputs.channel }}
+        INPUTS_EXCLUDE_LIST: ${{ inputs['exclude-list'] }}
       run: |
         temp=$(mktemp)
-        jq ".$INPUTS_KEY |= \"$INPUTS_VERSION\"" "/tmp/version/$INPUTS_CHANNEL.json" > "${temp}"
+        # Check if exclude list is not empty
+        if [[ "$INPUTS_EXCLUDE_LIST" != "[]" ]]; then
+          # Strip the [] suffix from INPUTS_KEY
+          CLEAN_KEY="${INPUTS_KEY%\[\]}"
+
+          jq --arg key "$CLEAN_KEY" \
+            --arg version "$INPUTS_VERSION" \
+            --argjson exclude "$INPUTS_EXCLUDE_LIST" '
+            .[$key] |= with_entries(
+              if (.key | IN($exclude[])) then
+                .
+              else
+                .value = $version
+              end
+            )
+          ' "/tmp/version/$INPUTS_CHANNEL.json" > "${temp}"
+        else
+          jq ".$INPUTS_KEY |= \"$INPUTS_VERSION\"" "/tmp/version/$INPUTS_CHANNEL.json" > "${temp}"
+        fi
         mv "${temp}" "/tmp/version/$INPUTS_CHANNEL.json"
 
     - shell: bash
