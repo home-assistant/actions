@@ -32,7 +32,9 @@ When any of these are set, they take **absolute precedence** over all computed v
 
 ---
 
-## Build Type: `plugin`
+## Build Types: `plugin` / `supervisor`
+
+These two types produce identical outputs.
 
 | Trigger              | version                          | stable  | channel | publish |
 |----------------------|----------------------------------|---------|---------|---------|
@@ -46,22 +48,7 @@ When any of these are set, they take **absolute precedence** over all computed v
 - **PR builds are never published.** The presence of `github.head_ref` (set on PRs) forces `publish=false`.
 - **Push to master** generates a [CalVer](https://calver.org/) dev version: base is `YYYY.MM.N` (incrementing from the latest matching tag), suffixed with `.devDDNN` where `DD` is the UTC day and `NN` is the zero-padded commit count since UTC midnight.
 - **Stable releases** get channel `beta` (not `stable`) — this is by design for plugin/supervisor types.
-
----
-
-## Build Type: `supervisor`
-
-| Trigger              | version                          | stable  | channel | publish |
-|----------------------|----------------------------------|---------|---------|---------|
-| **Pull Request**     | `<commit SHA>`                   | `false` | `dev`   | `false` |
-| **Push to master**   | CalVer dev `YYYY.MM.X.devDDNN`   | `false` | `dev`   | `true`  |
-| **Release (tag)**    | Tag name (e.g. `2024.12.1`)     | `true`  | `beta`  | `true`  |
-| **Push to tag**      | Tag name                         | `false` | `dev`   | `true`  |
-| **workflow_dispatch** | From inputs or ref              | From inputs or `false` | From inputs or computed | From inputs or `false` |
-
-### Notes
-- Behaves identically to `plugin` for all outputs.
-- **Additional side-effect:** Updates `supervisor/const.py` with `SUPERVISOR_VERSION = "<version>"` after version resolution.
+- **Note:** `supervisor` previously had a side-effect of patching `SUPERVISOR_VERSION` in `supervisor/const.py` after version resolution. This has been removed.
 
 ---
 
