@@ -87,14 +87,6 @@ runs:
         echo "version=$version" >> "$GITHUB_OUTPUT"
 
     - shell: bash
-      env:
-        INPUTS_TYPE: ${{ inputs.type }}
-      run: |
-        if [[ "$INPUTS_TYPE" == "supervisor" ]]; then
-          sed -i "s/^SUPERVISOR_VERSION =.*/SUPERVISOR_VERSION = \"${{ steps.version.outputs.version }}\"/g" supervisor/const.py
-        fi
-
-    - shell: bash
       id: channel
       env:
         INPUTS_TYPE: ${{ inputs.type }}
