@@ -28,11 +28,6 @@ runs:
         image=""
         version=""
 
-        mkdir -p "$ACTION_PATH/bin"
-        wget -q -O "$ACTION_PATH/bin/yq" https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-        chmod a+x "$ACTION_PATH/bin/yq"
-        echo "$ACTION_PATH/bin" >> "$GITHUB_PATH"
-
         for file_type in json yml yaml; do
           if [[ -f "$INPUTS_PATH/build.${file_type}" ]]; then
             archs=$(yq e -N -M '.build_from | keys' -o=json -I=0 "$INPUTS_PATH/build.${file_type}")
