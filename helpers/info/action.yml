@@ -91,6 +91,10 @@ runs:
           exit 1
         fi
 
+        if [[ "$image" == "null" || -z "$image" ]]; then
+          echo "::warning::Config option 'image' is not set, app will be built locally when installed from the repository"
+        fi
+
         echo "Architectures: $archs"
         echo "Image: $image"
         echo "Version: $version"
