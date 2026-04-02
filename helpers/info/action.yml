@@ -15,6 +15,18 @@ outputs:
   version:
     description: Returns the version defined in the config file for add-ons if any
     value: ${{ steps.info.outputs.version }}
+  name:
+    description: Returns the name defined in the config file
+    value: ${{ steps.info.outputs.name }}
+  description:
+    description: Returns the description defined in the config file
+    value: ${{ steps.info.outputs.description }}
+  slug:
+    description: Returns the slug defined in the config file
+    value: ${{ steps.info.outputs.slug }}
+  url:
+    description: Returns the url defined in the config file
+    value: ${{ steps.info.outputs.url }}
 runs:
   using: "composite"
   steps: 
@@ -27,9 +39,14 @@ runs:
         archs=[]
         image=""
         version=""
+        name=""
+        slug=""
+        description=""
+        url=""
 
         for file_type in json yml yaml; do
           if [[ -f "$INPUTS_PATH/build.${file_type}" ]]; then
+            echo "::warning::build.${file_type} is deprecated, move base image, build arguments and labels to Dockerfile"
             archs=$(yq e -N -M '.build_from | keys' -o=json -I=0 "$INPUTS_PATH/build.${file_type}")
             break
           elif [[ -f "$INPUTS_PATH/config.${file_type}" ]]; then
@@ -42,13 +59,50 @@ runs:
           if [[ -f "$INPUTS_PATH/config.${file_type}" ]]; then
             image=$(yq e -N -M '.image' -o=json -I=0 "$INPUTS_PATH/config.${file_type}")
             version=$(yq e -N -M '.version' -o=json -I=0 "$INPUTS_PATH/config.${file_type}")
+            name=$(yq e -N -M '.name' -o=json -I=0 "$INPUTS_PATH/config.${file_type}")
+            slug=$(yq e -N -M '.slug' -o=json -I=0 "$INPUTS_PATH/config.${file_type}")
+            description=$(yq e -N -M '.description' -o=json -I=0 "$INPUTS_PATH/config.${file_type}")
+            url=$(yq e -N -M '.url' -o=json -I=0 "$INPUTS_PATH/config.${file_type}")
           fi
         done
+
+        invalid=false
+        if [[ "$name" == "null" || -z "$name" ]]; then
+          echo "::error::Required config option 'name' is missing"
+          invalid=true
+        fi
+        if [[ "$version" == "null" || -z "$version" ]]; then
+          echo "::error::Required config option 'version' is missing"
+          invalid=true
+        fi
+        if [[ "$slug" == "null" || -z "$slug" ]]; then
+          echo "::error::Required config option 'slug' is missing"
+          invalid=true
+        fi
+        if [[ "$description" == "null" || -z "$description" ]]; then
+          echo "::error::Required config option 'description' is missing"
+          invalid=true
+        fi
+        if [[ "$archs" == "[]" || "$archs" == "null" || -z "$archs" ]]; then
+          echo "::error::Required config option 'arch' is missing"
+          invalid=true
+        fi
+        if [[ "$invalid" == "true" ]]; then
+          exit 1
+        fi
 
         echo "Architectures: $archs"
         echo "Image: $image"
         echo "Version: $version"
+        echo "Name: $name"
+        echo "Slug: $slug"
+        echo "Description: $description"
+        echo "URL: $url"
 
         echo "architectures=$archs" >> "$GITHUB_OUTPUT"
         echo "image=$image" >> "$GITHUB_OUTPUT"
         echo "version=$version" >> "$GITHUB_OUTPUT"
+        echo "name=$name" >> "$GITHUB_OUTPUT"
+        echo "slug=$slug" >> "$GITHUB_OUTPUT"
+        echo "description=$description" >> "$GITHUB_OUTPUT"
+        echo "url=$url" >> "$GITHUB_OUTPUT"
