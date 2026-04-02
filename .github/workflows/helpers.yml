@@ -103,3 +103,21 @@ jobs:
           if [[ '${{ steps.info.outputs.version }}' != '"1.0.0"' ]]; then
             exit 1
           fi
+
+      - name: Validate name
+        run: |
+          if [[ '${{ steps.info.outputs.name }}' != '"Example App"' ]]; then
+            exit 1
+          fi
+
+      - name: Validate slug
+        run: |
+          if [[ '${{ steps.info.outputs.slug }}' != '"example_app"' ]]; then
+            exit 1
+          fi
+
+      - name: Validate description
+        run: |
+          if [[ '${{ steps.info.outputs.description }}' != '"An example Home Assistant app"' ]]; then
+            exit 1
+          fi
