@@ -43,6 +43,8 @@ runs:
         slug=""
         description=""
         url=""
+        has_config=false
+        invalid=false
 
         for file_type in json yml yaml; do
           if [[ -f "$INPUTS_PATH/build.${file_type}" ]]; then
@@ -57,42 +59,42 @@ runs:
 
         for file_type in json yml yaml; do
           if [[ -f "$INPUTS_PATH/config.${file_type}" ]]; then
+            has_config=true
             image=$(yq e -N -M '.image' -o=json -I=0 "$INPUTS_PATH/config.${file_type}")
             version=$(yq e -N -M '.version' -o=json -I=0 "$INPUTS_PATH/config.${file_type}")
             name=$(yq e -N -M '.name' -o=json -I=0 "$INPUTS_PATH/config.${file_type}")
             slug=$(yq e -N -M '.slug' -o=json -I=0 "$INPUTS_PATH/config.${file_type}")
             description=$(yq e -N -M '.description' -o=json -I=0 "$INPUTS_PATH/config.${file_type}")
             url=$(yq e -N -M '.url' -o=json -I=0 "$INPUTS_PATH/config.${file_type}")
+            break
           fi
         done
 
-        invalid=false
-        if [[ "$name" == "null" || -z "$name" ]]; then
-          echo "::error::Required config option 'name' is missing"
-          invalid=true
-        fi
-        if [[ "$version" == "null" || -z "$version" ]]; then
-          echo "::error::Required config option 'version' is missing"
-          invalid=true
-        fi
-        if [[ "$slug" == "null" || -z "$slug" ]]; then
-          echo "::error::Required config option 'slug' is missing"
-          invalid=true
-        fi
-        if [[ "$description" == "null" || -z "$description" ]]; then
-          echo "::error::Required config option 'description' is missing"
-          invalid=true
-        fi
-        if [[ "$archs" == "[]" || "$archs" == "null" || -z "$archs" ]]; then
-          echo "::error::Required config option 'arch' is missing"
-          invalid=true
-        fi
-        if [[ "$invalid" == "true" ]]; then
-          exit 1
-        fi
+        if [[ "$has_config" == "true" ]]; then
+          if [[ "$name" == "null" || -z "$name" ]]; then
+            echo "::error::Required config option 'name' is missing"
+            invalid=true
+          fi
+          if [[ "$version" == "null" || -z "$version" ]]; then
+            echo "::error::Required config option 'version' is missing"
+            invalid=true
+          fi
+          if [[ "$slug" == "null" || -z "$slug" ]]; then
+            echo "::error::Required config option 'slug' is missing"
+            invalid=true
+          fi
+          if [[ "$description" == "null" || -z "$description" ]]; then
+            echo "::error::Required config option 'description' is missing"
+            invalid=true
+          fi
+          if [[ "$archs" == "[]" || "$archs" == "null" || -z "$archs" ]]; then
+            echo "::error::Required config option 'arch' is missing"
+            invalid=true
+          fi
 
-        if [[ "$image" == "null" || -z "$image" ]]; then
-          echo "::warning::Config option 'image' is not set, app will be built locally when installed from the repository"
+          if [[ "$image" == "null" || -z "$image" ]]; then
+            echo "::warning::Config option 'image' is not set, app will be built locally when installed from the repository"
+          fi
         fi
 
         echo "Architectures: $archs"
@@ -102,6 +104,10 @@ runs:
         echo "Slug: $slug"
         echo "Description: $description"
         echo "URL: $url"
+
+        if [[ "$invalid" == "true" ]]; then
+          exit 1
+        fi
 
         echo "architectures=$archs" >> "$GITHUB_OUTPUT"
         echo "image=$image" >> "$GITHUB_OUTPUT"
