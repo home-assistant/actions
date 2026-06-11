@@ -2,7 +2,7 @@ name: 'Home Assistant helper: version'
 description: 'GitHub action helper: version'
 inputs:
   type:
-    description: The type of target to check against (core, supervisor, plugin, generic)
+    description: The type of target to check against (core, supervisor, plugin, generic, landingpage)
     required: false
     default: 'generic'
 outputs:
@@ -50,7 +50,7 @@ runs:
         if [[ ! -z "$GITHUB_EVENT_INPUTS_VERSION" ]]; then
           version="$GITHUB_EVENT_INPUTS_VERSION"
 
-        elif [[ "${version}" =~ (master|main) && "$INPUTS_TYPE" =~ (supervisor|plugin|generic) ]]; then
+        elif [[ "${version}" =~ (master|main) && "$INPUTS_TYPE" =~ (supervisor|plugin|generic|landingpage) ]]; then
           today="$(date --utc '+%Y-%m-%d')"
           midnight_timestamp="$(date --utc +%s --date=$today)"
           calver_date="$(date --utc --date=$today '+%Y.%m')"
@@ -64,7 +64,7 @@ runs:
           calver_dev="$(date --utc --date=$today '+.dev%d')$(printf "%02d" ${commit_count})"
           version="${base_ver}${calver_dev}"
 
-        elif [[ "${version}" == "merge" && "$INPUTS_TYPE" =~ (supervisor|plugin|generic) ]]; then
+        elif [[ "${version}" == "merge" && "$INPUTS_TYPE" =~ (supervisor|plugin|generic|landingpage) ]]; then
           version="${{ github.sha }}"
 
         elif [[ "${version}" == "dev" && "$INPUTS_TYPE" == "core" ]]; then
@@ -95,7 +95,7 @@ runs:
         if [[ ! -z "$GITHUB_EVENT_INPUTS_CHANNEL" ]]; then
           echo "channel=$GITHUB_EVENT_INPUTS_CHANNEL" >> "$GITHUB_OUTPUT"
 
-        elif [[ "$INPUTS_TYPE" =~ (plugin|supervisor) ]]; then
+        elif [[ "$INPUTS_TYPE" =~ (plugin|supervisor|landingpage) ]]; then
           if [[ "${{ steps.version.outputs.stable }}" == "true" ]]; then
             echo "channel=beta" >> "$GITHUB_OUTPUT"
           else
@@ -132,7 +132,9 @@ runs:
             echo "publish=false" >> "$GITHUB_OUTPUT"
           fi
 
-        elif [[ "$INPUTS_TYPE" == "core" ]]; then
+        # landingpage resolves version/channel like supervisor/plugin, but is only
+        # ever published from a release tag - never on push/merge to the default branch.
+        elif [[ "$INPUTS_TYPE" =~ (core|landingpage) ]]; then
           if [[ "$EVENT_NAME" == "release" ]]; then
             echo "publish=true" >> "$GITHUB_OUTPUT"
           else
