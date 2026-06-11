@@ -6,7 +6,7 @@ Determines **version**, **stability**, **channel**, and **publish** status for H
 
 | Input  | Required | Default   | Description                                              |
 |--------|----------|-----------|----------------------------------------------------------|
-| `type` | no       | `generic` | Target type: `core`, `supervisor`, `plugin`, or `generic` |
+| `type` | no       | `generic` | Target type: `core`, `supervisor`, `plugin`, `generic`, or `landingpage` |
 
 ## Outputs
 
@@ -49,6 +49,27 @@ These two types produce identical outputs.
 - **Push to master** generates a [CalVer](https://calver.org/) dev version: base is `YYYY.MM.N` (incrementing from the latest matching tag), suffixed with `.devDDNN` where `DD` is the UTC day and `NN` is the zero-padded commit count since UTC midnight.
 - **Stable releases** get channel `beta` (not `stable`) — this is by design for plugin/supervisor types.
 - **Note:** `supervisor` previously had a side-effect of patching `SUPERVISOR_VERSION` in `supervisor/const.py` after version resolution. This has been removed.
+
+---
+
+## Build Type: `landingpage`
+
+Used for the landingpage image, which is pushed as a tag on the existing
+`*-homeassistant` images. Version and channel resolve exactly like
+`plugin`/`supervisor`, but - like `core` - it is **only published on a release
+tag**, never on a push/merge to the default branch.
+
+| Trigger              | version                          | stable  | channel | publish |
+|----------------------|----------------------------------|---------|---------|---------|
+| **Pull Request**     | `<commit SHA>`                   | `false` | `dev`   | `false` |
+| **Push to master**   | CalVer dev `YYYY.MM.X.devDDNN`   | `false` | `dev`   | `false` |
+| **Release (tag)**    | Tag name (e.g. `2024.12.1`)     | `true`  | `beta`  | `true`  |
+| **Push to tag**      | Tag name                         | `false` | `dev`   | `false` |
+| **workflow_dispatch** | From inputs or ref              | From inputs or `false` | From inputs or computed | From inputs or `false` |
+
+### Notes
+- **Only releases are published.** Pushes (including merges to the default branch), PRs, and other events all produce `publish=false`.
+- The image is always pushed under the `landingpage` tag; the resolved `version` is only used as the image version label.
 
 ---
 
@@ -97,9 +118,9 @@ These two types produce identical outputs.
 github.event.inputs.version set?
 ├─ YES → use that value
 └─ NO
-   ├─ ref is master/main AND type is supervisor/plugin/generic?
+   ├─ ref is master/main AND type is supervisor/plugin/generic/landingpage?
    │  └─ YES → CalVer dev: YYYY.MM.X.devDDNN
-   ├─ ref is "merge" AND type is supervisor/plugin/generic?
+   ├─ ref is "merge" AND type is supervisor/plugin/generic/landingpage?
    │  └─ YES → commit SHA
    ├─ ref is "dev" AND type is core?
    │  └─ YES → nightly bump via version_bump.py
@@ -108,7 +129,7 @@ github.event.inputs.version set?
 
 ## CalVer Dev Version Format
 
-Used by `supervisor`, `plugin`, and `generic` on pushes to master/main:
+Used by `supervisor`, `plugin`, `generic`, and `landingpage` on pushes to master/main:
 
 ```
 YYYY.MM.N.devDDNN
