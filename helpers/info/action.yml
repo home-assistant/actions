@@ -78,6 +78,9 @@ runs:
           if [[ "$version" == "null" || -z "$version" ]]; then
             echo "::error::Required config option 'version' is missing"
             invalid=true
+          elif ! jq -e 'type == "string" and length > 0' <<< "$version" >/dev/null; then
+            echo "::error::Config option 'version' must be a non-empty string; quote numeric versions, e.g. version: \"1.10\""
+            invalid=true
           fi
           if [[ "$slug" == "null" || -z "$slug" ]]; then
             echo "::error::Required config option 'slug' is missing"

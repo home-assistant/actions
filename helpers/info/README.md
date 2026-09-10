@@ -49,7 +49,9 @@ Resolved from `config.*` (app configuration, first matching extension):
 | `.image`       | no       | `"ghcr.io/home-assistant/{arch}-app-example"`  |
 | `.url`         | no       | `"https://github.com/home-assistant/example"`  |
 
-A warning is emitted for each required option that is missing or null. See [App Configuration](https://developers.home-assistant.io/docs/apps/configuration) for full documentation.
+The action fails with an error for each required option that is missing or null. See [App Configuration](https://developers.home-assistant.io/docs/apps/configuration) for full documentation.
+
+The version must be a non-empty string and is returned as a JSON string. Quote numeric-looking versions, for example `version: "1.10"`: unquoted `1.10` is a number and can become `1.1` during parsing. Unquoted `1.10.0` is already a string and is accepted.
 
 If no config file exists, all values default to `""`.
 
