@@ -13,6 +13,11 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@v7.0.1
-      
+
+      - name: Copy test integration to custom_components
+        run: |
+          mkdir -p custom_components
+          cp -r test_files/dummy-integration custom_components/
+
       - name: Test hassfest
         uses: ./hassfest
