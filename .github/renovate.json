@@ -1,23 +1,35 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
-  "enabledManagers": ["github-actions"],
+  "extends": ["config:recommended"],
+  "enabledManagers": ["github-actions", "custom.regex"],
   "schedule": ["before 8am on monday"],
   "semanticCommits": "disabled",
   "labels": ["dependencies", "github_actions"],
+  "constraints": {
+    "ghActionsLock": "v0.5.0"
+  },
+  "customManagers": [
+    {
+      "description": "Keep gh-actions-lock in CI and Renovate's lockfile generator on the same version",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/actions-lock\\.yml$/",
+        "/^\\.github/renovate\\.json$/"
+      ],
+      "matchStrings": [
+        "GH_ACTIONS_LOCK_VERSION: (?<currentValue>v\\d+\\.\\d+\\.\\d+)",
+        "\"ghActionsLock\": \"(?<currentValue>v\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "github/gh-actions-lock",
+      "datasourceTemplate": "github-releases"
+    }
+  ],
   "packageRules": [
     {
       "description": "Leave runner labels and action version inputs alone, Dependabot never updated those",
       "matchManagers": ["github-actions"],
       "matchDepTypes": ["github-runner", "uses-with"],
       "enabled": false
-    },
-    {
-      "description": "Our own actions that follow a branch (like home-assistant/actions@master) float on purpose. Pinning them would open a digest PR in every repository for each change to them. Our own actions on a version tag are pinned like any other.",
-      "matchManagers": ["github-actions"],
-      "matchPackageNames": ["home-assistant/**"],
-      "matchCurrentValue": "/^(dev|main|master)$/",
-      "pinDigests": false
     }
   ]
 }
