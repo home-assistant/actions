@@ -75,9 +75,22 @@ runs:
     - shell: bash
       env:
         INPUTS_VERSION: ${{ inputs.version }}
+        KEY_DESCRIPTION: ${{ steps.validate-input.outputs.key-description }}
+        EVENT_NAME: ${{ github.event_name }}
+        ACTOR: ${{ github.actor }}
+        ACTOR_ID: ${{ github.actor_id }}
+        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}
       run: |
         cd /tmp/version
-        git commit -am "Bump ${{ steps.validate-input.outputs.key-description }} to $INPUTS_VERSION"
+        commit_args=(-am "Bump $KEY_DESCRIPTION to $INPUTS_VERSION" -m "Workflow run: $RUN_URL")
+
+        # On schedule runs, github.actor is whoever last edited the cron entry
+        actor_email="${ACTOR_ID}+${ACTOR}@users.noreply.github.com"
+        if [[ "$EVENT_NAME" != "schedule" && "$ACTOR" != *"[bot]" && "$actor_email" != "$(git config user.email)" ]]; then
+          commit_args+=(--trailer "Co-authored-by: ${ACTOR} <${actor_email}>")
+        fi
+
+        git commit "${commit_args[@]}"
         git push
 
     - shell: bash
