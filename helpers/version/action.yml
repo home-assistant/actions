@@ -53,7 +53,7 @@ runs:
         elif [[ "${version}" =~ (master|main) && "$INPUTS_TYPE" =~ (supervisor|plugin|generic|landingpage) ]]; then
           today="$(date --utc '+%Y-%m-%d')"
           midnight_timestamp="$(date --utc +%s --date=$today)"
-          calver_date="$(date --utc --date=$today '+%Y.%m')"
+          calver_date="$(date --utc --date=$today '+%Y.%-m')"
           if tag=$(git describe --tags --abbrev=0 --match="${calver_date}.*" 2>/dev/null)
           then
             base_ver="$(echo $tag | awk -F. '{printf "%s.%s.%d",$1,$2,$3+1}')"
