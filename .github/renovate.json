@@ -6,7 +6,7 @@
   "semanticCommits": "disabled",
   "labels": ["dependencies", "github_actions"],
   "constraints": {
-    "ghActionsLock": "v0.5.0"
+    "ghActionsLock": "v0.5.1"
   },
   "customManagers": [
     {
